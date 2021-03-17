@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.12.0)
 project(vec)
 
-#add_definitions(-std=c++11)
 add_definitions(-std=c++17)
 
 set(CXX_GCC_FLAGS "${CXX_GCC_FLAGS} -fno-omit-frame-pointer -Wall")
@@ -37,5 +36,5 @@ link_directories("thirdparty/install/lib64/")
 add_executable(cow_test test/cow_test.cpp)
 target_link_libraries(cow_test gtest pthread)
 
-add_executable(array_test test/podarray_test.cpp src/Common/PODArray.cpp)
+add_executable(array_test test/podarray_test.cpp src/Common/PODArray.cpp src/common/likely.h)
 target_link_libraries(array_test gtest pthread)
