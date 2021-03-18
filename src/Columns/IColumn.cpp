@@ -26,10 +26,10 @@ std::string IColumn::dumpStructure() const
     return res.str();
 }
 
-//void IColumn::insertFrom(const IColumn & src, size_t n)
-//{
-//    insert(src[n]);
-//}
+void IColumn::insertFrom(const IColumn & src, size_t n)
+{
+    insert(src[n]);
+}
 
 //bool isColumnNullable(const IColumn & column)
 //{

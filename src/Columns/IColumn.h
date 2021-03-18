@@ -6,7 +6,7 @@
 //#include <Common/Exception.h>
 //#include <Common/typeid_cast.h>
 #include <common/StringRef.h>
-//#include <Core/Types.h>
+#include <Core/Field.h>
 
 
 class SipHash;
@@ -19,7 +19,7 @@ namespace ErrorCodes
 {
     extern const int CANNOT_GET_SIZE_OF_FIELD;
     extern const int NOT_IMPLEMENTED;
-    extern const int SIZES_OF_COLUMNS_DOESNT_MATCH;
+    extern const int SIZES_OF_COLUMNS_DOESNT_MATCH ;
 }
 
 class Arena;
@@ -73,7 +73,7 @@ public:
 
     /// Returns value of n-th element in universal Field representation.
     /// Is used in rare cases, since creation of Field instance is expensive usually.
-//    virtual Field operator[](size_t n) const = 0;
+    virtual Field operator[](size_t n) const = 0;
 
     /// Like the previous one, but avoids extra copying if Field is in a container, for example.
     virtual void get(size_t n, Field & res) const = 0;
@@ -221,7 +221,7 @@ public:
 
     /// Creates new column with values column[indexes[:limit]]. If limit is 0, all indexes are used.
     /// Indexes must be one of the ColumnUInt. For default implementation, see selectIndexImpl from ColumnsCommon.h
-    virtual Ptr index(const IColumn & indexes, size_t limit) const = 0;
+//    virtual Ptr index(const IColumn & indexes, size_t limit) const = 0;
 
     /** Compares (*this)[n] and rhs[m]. Column rhs should have the same type.
       * Returns negative number, 0, or positive number (*this)[n] is less, equal, greater than rhs[m] respectively.
@@ -242,7 +242,7 @@ public:
       * limit - if isn't 0, then only first limit elements of the result column could be sorted.
       * nan_direction_hint - see above.
       */
-    virtual void getPermutation(bool reverse, size_t limit, int nan_direction_hint, Permutation & res) const = 0;
+//    virtual void getPermutation(bool reverse, size_t limit, int nan_direction_hint, Permutation & res) const = 0;
 
     /** Copies each element according offsets parameter.
       * (i-th element should be copied offsets[i] - offsets[i - 1] times.)
@@ -264,7 +264,7 @@ public:
     /// For now it is a helper to de-virtualize calls to insert*() functions inside gather loop
     /// (descendants should call gatherer_stream.gather(*this) to implement this function.)
     /// TODO: interface decoupled from ColumnGathererStream that allows non-generic specializations.
-    virtual void gather(ColumnGathererStream & gatherer_stream) = 0;
+//    virtual void gather(ColumnGathererStream & gatherer_stream) = 0;
 
     /** Computes minimum and maximum element of the column.
       * In addition to numeric types, the function is completely implemented for Date and DateTime.
