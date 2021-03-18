@@ -188,11 +188,11 @@ namespace DB
 
 namespace ErrorCodes
 {
-    extern const int POCO_EXCEPTION = 1;
-    extern const int STD_EXCEPTION = 2;
-    extern const int UNKNOWN_EXCEPTION = 3;
-    extern const int CANNOT_TRUNCATE_FILE = 4;
-    extern const int NOT_IMPLEMENTED = 5;
+    extern const int POCO_EXCEPTION;
+    extern const int STD_EXCEPTION;
+    extern const int UNKNOWN_EXCEPTION;
+    extern const int CANNOT_TRUNCATE_FILE;
+    extern const int NOT_IMPLEMENTED;
 }
 
 //TODO: use fmt

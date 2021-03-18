@@ -1,5 +1,8 @@
 #pragma once
 
+// TODO: Tracker
+// TODO: Readable
+
 #include <string.h>
 #include <exception>
 #include <fmt/format.h>
@@ -29,7 +32,7 @@
 #include <common/mremap.h>
 
 // #include <Common/MemoryTracker.h>
-// #include <Common/Exception.h>
+#include <Common/Exception.h>
 // #include <Common/formatReadable.h>
 
 #include <Common/Allocator_fwd.h>
@@ -125,8 +128,7 @@ public:
 
             void * new_buf = ::realloc(buf, new_size);
             if (nullptr == new_buf)
-                throw std::exception();
-                // DB::throwFromErrno("Allocator: Cannot realloc from " + formatReadableSizeWithBinarySuffix(old_size) + " to " + formatReadableSizeWithBinarySuffix(new_size) + ".", DB::ErrorCodes::CANNOT_ALLOCATE_MEMORY);
+                DB::throwFromErrno("Allocator: Cannot realloc from " + std::to_string(old_size) + " to " + std::to_string(new_size) + ".", DB::ErrorCodes::CANNOT_ALLOCATE_MEMORY);
 
             buf = new_buf;
             if constexpr (clear_memory)
@@ -142,8 +144,7 @@ public:
             buf = clickhouse_mremap(buf, old_size, new_size, MREMAP_MAYMOVE,
                                     PROT_READ | PROT_WRITE, mmap_flags, -1, 0);
             if (MAP_FAILED == buf)
-                throw std::exception();
-                // DB::throwFromErrno("Allocator: Cannot mremap memory chunk from " + formatReadableSizeWithBinarySuffix(old_size) + " to " + formatReadableSizeWithBinarySuffix(new_size) + ".", DB::ErrorCodes::CANNOT_MREMAP);
+                DB::throwFromErrno("Allocator: Cannot mremap memory chunk from " + std::to_string(old_size) + " to " + std::to_string(new_size) + ".", DB::ErrorCodes::CANNOT_MREMAP);
 
             /// No need for zero-fill, because mmap guarantees it.
         }
@@ -199,15 +200,14 @@ private:
         if (size >= MMAP_THRESHOLD)
         {
             if (alignment > MMAP_MIN_ALIGNMENT)
-                throw std::exception();
-                // throw DB::Exception("Too large alignment " + formatReadableSizeWithBinarySuffix(alignment) + ": more than page size when allocating "
-                //     + formatReadableSizeWithBinarySuffix(size) + ".", DB::ErrorCodes::BAD_ARGUMENTS);
+                throw DB::Exception(fmt::format("Too large alignment {}: more than page size when allocating {}.",alignment,size));
 
             buf = mmap(getMmapHint(), size, PROT_READ | PROT_WRITE,
                        mmap_flags, -1, 0);
             if (MAP_FAILED == buf)
-                throw std::exception();
-                // DB::throwFromErrno("Allocator: Cannot mmap " + formatReadableSizeWithBinarySuffix(size) + ".", DB::ErrorCodes::CANNOT_ALLOCATE_MEMORY);
+                // DB::throwFromErrno("Allocator: Cannot mmap " + std::to_string(size) + ".", DB::ErrorCodes::CANNOT_ALLOCATE_MEMORY);
+                DB::throwFromErrno(fmt::format("Allocator: Cannot mmap {}.", size),
+                                   DB::ErrorCodes::CANNOT_ALLOCATE_MEMORY);
 
             /// No need for zero-fill, because mmap guarantees it.
         }
@@ -221,17 +221,16 @@ private:
                     buf = ::malloc(size);
 
                 if (nullptr == buf)
-                    throw std::exception();
-                    // DB::throwFromErrno("Allocator: Cannot malloc " + formatReadableSizeWithBinarySuffix(size) + ".", DB::ErrorCodes::CANNOT_ALLOCATE_MEMORY);
-            }
-            else
-            {
+                    DB::throwFromErrno(fmt::format("Allocator: Cannot malloc {}.", size),
+                                       DB::ErrorCodes::CANNOT_ALLOCATE_MEMORY);
+            } else {
                 buf = nullptr;
                 int res = posix_memalign(&buf, alignment, size);
 
                 if (0 != res)
-                    throw std::exception();
-                    // DB::throwFromErrno("Cannot allocate memory (posix_memalign) " + formatReadableSizeWithBinarySuffix(size) + ".", DB::ErrorCodes::CANNOT_ALLOCATE_MEMORY, res);
+                    DB::throwFromErrno(
+                            fmt::format("Cannot allocate memory (posix_memalign) {}.", size),
+                            DB::ErrorCodes::CANNOT_ALLOCATE_MEMORY, res);
 
                 if constexpr (clear_memory)
                     memset(buf, 0, size);
@@ -245,8 +244,8 @@ private:
         if (size >= MMAP_THRESHOLD)
         {
             if (0 != munmap(buf, size))
-                throw std::exception();
-                // DB::throwFromErrno("Allocator: Cannot munmap " + formatReadableSizeWithBinarySuffix(size) + ".", DB::ErrorCodes::CANNOT_MUNMAP);
+                DB::throwFromErrno(fmt::format("Allocator: Cannot munmap {}.", size),
+                                   DB::ErrorCodes::CANNOT_MUNMAP);
         }
         else
         {
