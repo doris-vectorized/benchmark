@@ -3,6 +3,7 @@
 #include <memory>
 #include <Common/COW.h>
 #include <boost/noncopyable.hpp>
+#include <Core/Types.h>
 // #include <DataTypes/DataTypeCustom.h>
 
 
@@ -79,53 +80,53 @@ public:
       * Default implementations of ...WithMultipleStreams methods will call serializeBinaryBulk, deserializeBinaryBulk for single stream.
       */
 
-    struct Substream
-    {
-        enum Type
-        {
-            ArrayElements,
-            ArraySizes,
+    // struct Substream
+    // {
+    //     enum Type
+    //     {
+    //         ArrayElements,
+    //         ArraySizes,
 
-            NullableElements,
-            NullMap,
+    //         NullableElements,
+    //         NullMap,
 
-            TupleElement,
+    //         TupleElement,
 
-            DictionaryKeys,
-            DictionaryIndexes,
-        };
-        Type type;
+    //         DictionaryKeys,
+    //         DictionaryIndexes,
+    //     };
+    //     Type type;
 
-        /// Index of tuple element, starting at 1.
-        String tuple_element_name;
+    //     /// Index of tuple element, starting at 1.
+    //     String tuple_element_name;
 
-        Substream(Type type_) : type(type_) {}
-    };
+    //     Substream(Type type_) : type(type_) {}
+    // };
 
-    using SubstreamPath = std::vector<Substream>;
+    // using SubstreamPath = std::vector<Substream>;
 
-    using StreamCallback = std::function<void(const SubstreamPath &)>;
-    virtual void enumerateStreams(const StreamCallback & callback, SubstreamPath & path) const
-    {
-        callback(path);
-    }
-    void enumerateStreams(const StreamCallback & callback, SubstreamPath && path) const { enumerateStreams(callback, path); }
-    void enumerateStreams(const StreamCallback & callback) const { enumerateStreams(callback, {}); }
+    // using StreamCallback = std::function<void(const SubstreamPath &)>;
+    // virtual void enumerateStreams(const StreamCallback & callback, SubstreamPath & path) const
+    // {
+    //     callback(path);
+    // }
+    // void enumerateStreams(const StreamCallback & callback, SubstreamPath && path) const { enumerateStreams(callback, path); }
+    // void enumerateStreams(const StreamCallback & callback) const { enumerateStreams(callback, {}); }
 
-    // using OutputStreamGetter = std::function<WriteBuffer*(const SubstreamPath &)>;
-    // using InputStreamGetter = std::function<ReadBuffer*(const SubstreamPath &)>;
+    // // using OutputStreamGetter = std::function<WriteBuffer*(const SubstreamPath &)>;
+    // // using InputStreamGetter = std::function<ReadBuffer*(const SubstreamPath &)>;
 
-    struct SerializeBinaryBulkState
-    {
-        virtual ~SerializeBinaryBulkState() = default;
-    };
-    struct DeserializeBinaryBulkState
-    {
-        virtual ~DeserializeBinaryBulkState() = default;
-    };
+    // struct SerializeBinaryBulkState
+    // {
+    //     virtual ~SerializeBinaryBulkState() = default;
+    // };
+    // struct DeserializeBinaryBulkState
+    // {
+    //     virtual ~DeserializeBinaryBulkState() = default;
+    // };
 
-    using SerializeBinaryBulkStatePtr = std::shared_ptr<SerializeBinaryBulkState>;
-    using DeserializeBinaryBulkStatePtr = std::shared_ptr<DeserializeBinaryBulkState>;
+    // using SerializeBinaryBulkStatePtr = std::shared_ptr<SerializeBinaryBulkState>;
+    // using DeserializeBinaryBulkStatePtr = std::shared_ptr<DeserializeBinaryBulkState>;
 
     // struct SerializeBinaryBulkSettings
     // {
@@ -440,7 +441,7 @@ public:
     /// Updates avg_value_size_hint for newly read column. Uses to optimize deserialization. Zero expected for first column.
     static void updateAvgValueSizeHint(const IColumn & column, double & avg_value_size_hint);
 
-    static String getFileNameForStream(const String & column_name, const SubstreamPath & path);
+    // static String getFileNameForStream(const String & column_name, const SubstreamPath & path);
 
 private:
     friend class DataTypeFactory;

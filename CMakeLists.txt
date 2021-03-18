@@ -46,6 +46,6 @@ target_link_libraries(exception_test boost_stacktrace_addr2line boost_stacktrace
 add_executable(column_vector_test test/column_vector_test src/Common/PODArray.cpp src/Columns/IColumn.cpp src/Columns/ColumnVector.cpp src/Common/Exception.cpp src/Common/ErrorCodes.cpp src/Columns/ColumnConst.cpp src/Columns/ColumnNullable.cpp src/common/demangle.cpp src/Columns/ColumnsCommon.cpp)
 target_link_libraries(column_vector_test gtest pthread dl)
 
-add_executable(block_test test/block_test.cpp src/Core/BlockInfo.cpp src/Common/PODArray.cpp src/Common/ErrorCodes.cpp src/Common/Exception.cpp src/Core/Block.cpp src/Columns/IColumn.cpp src/Core/ColumnWithTypeAndName.cpp  src/Columns/ColumnConst.cpp src/Columns/ColumnNullable.cpp src/common/demangle.cpp src/Columns/ColumnsCommon.cpp src/Columns/ColumnVector.cpp)
+add_executable(block_test test/block_test.cpp src/Core/BlockInfo.cpp src/Common/PODArray.cpp src/Common/ErrorCodes.cpp src/Common/Exception.cpp src/Core/Block.cpp src/Columns/IColumn.cpp src/Core/ColumnWithTypeAndName.cpp src/DataTypes/IDataType.cpp src/DataTypes/NestedUtils.cpp src/Columns/ColumnConst.cpp src/Columns/ColumnNullable.cpp src/common/demangle.cpp src/Columns/ColumnsCommon.cpp src/DataTypes/DataTypesNumber.cpp src/DataTypes/DataTypeNumberBase.cpp src/Columns/ColumnVector.cpp)
 target_link_libraries(block_test gtest)
 
