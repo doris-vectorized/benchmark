@@ -437,7 +437,7 @@ struct IsMutableColumns<> { static const bool value = true; };
 //}
 
 /// True if column's an ColumnConst instance. It's just a syntax sugar for type check.
-bool isColumnConst(const IColumn & column);
+//bool isColumnConst(const IColumn & column);
 
 /// True if column's an ColumnNullable instance. It's just a syntax sugar for type check.
 bool isColumnNullable(const IColumn & column);

@@ -203,7 +203,7 @@ public:
         return false;
     }
 
-    bool isNullable() const override { return isColumnNullable(*data); }
+//    bool isNullable() const override { return isColumnNullable(*data); }
     bool onlyNull() const override { return data->isNullAt(0); }
     bool isNumeric() const override { return data->isNumeric(); }
     bool isFixedAndContiguous() const override { return data->isFixedAndContiguous(); }

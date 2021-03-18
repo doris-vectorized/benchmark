@@ -3,7 +3,7 @@
 #include <sstream>
 #include <Columns/IColumn.h>
 //#include <Columns/ColumnNullable.h>
-//#include <Columns/ColumnConst.h>
+#include <Columns/ColumnConst.h>
 //#include <Core/Field.h>
 
 
@@ -35,7 +35,7 @@ void IColumn::insertFrom(const IColumn & src, size_t n)
 //{
 //    return checkColumn<ColumnNullable>(column);
 //}
-//
+
 //bool isColumnConst(const IColumn & column)
 //{
 //    return checkColumn<ColumnConst>(column);
