@@ -27,7 +27,7 @@ include_directories("thirdparty/install/include")
 include_directories("src/")
 include_directories("libs/libcommon/include")
 #include_directories("libs/libpcg-random/include")
-#include_directories("libs/cityhash102/include")
+include_directories("libs/cityhash102/include")
 #FILE(GLOB COMMON_SOURCE "src/Common/*.cpp")
 
 link_directories("thirdparty/install/lib/")
@@ -45,3 +45,6 @@ target_link_libraries(exception_test boost_stacktrace_addr2line boost_stacktrace
 
 add_executable(column_vector_test test/column_vector_test src/Common/PODArray.cpp src/Columns/IColumn.cpp src/Columns/ColumnVector.cpp src/Common/Exception.cpp src/Common/ErrorCodes.cpp)
 target_link_libraries(column_vector_test gtest pthread dl)
+
+add_executable(block_test test/block_test.cpp src/Core/BlockInfo.cpp src/Common/PODArray.cpp src/Common/ErrorCodes.cpp src/Common/Exception.cpp src/Core/Block.cpp src/Columns/IColumn.cpp src/Core/ColumnWithTypeAndName.cpp )
+target_link_libraries(block_test gtest)
