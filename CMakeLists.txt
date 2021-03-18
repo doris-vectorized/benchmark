@@ -36,5 +36,5 @@ link_directories("thirdparty/install/lib64/")
 add_executable(cow_test test/cow_test.cpp)
 target_link_libraries(cow_test gtest pthread)
 
-add_executable(array_test test/podarray_test.cpp src/Common/PODArray.cpp src/common/likely.h)
+add_executable(array_test test/podarray_test.cpp src/Common/PODArray.cpp src/Columns/IColumn.cpp src/common/likely.h)
 target_link_libraries(array_test gtest pthread)
