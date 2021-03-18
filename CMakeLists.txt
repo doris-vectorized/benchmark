@@ -37,15 +37,15 @@ link_libraries(fmt pthread dl)
 add_executable(cow_test test/cow_test.cpp)
 target_link_libraries(cow_test gtest)
 
-add_executable(array_test test/podarray_test.cpp src/Common/PODArray.cpp src/Columns/IColumn.cpp src/Columns/ColumnVector.cpp src/Common/Exception.cpp src/Common/ErrorCodes.cpp)
+add_executable(array_test test/podarray_test.cpp src/Common/PODArray.cpp src/Columns/IColumn.cpp src/Columns/ColumnVector.cpp src/Common/Exception.cpp src/Common/ErrorCodes.cpp src/Columns/ColumnConst.cpp src/Columns/ColumnNullable.cpp src/common/demangle.cpp src/Columns/ColumnsCommon.cpp)
 target_link_libraries(array_test gtest pthread dl)
 
-add_executable(exception_test test/exception_test.cpp src/Common/Exception.cpp src/Common/ErrorCodes.cpp src/Columns/ColumnConst.h src/Columns/ColumnConst.cpp src/Columns/ColumnsCommon.cpp src/common/demangle.cpp src/Columns/IColumn.cpp src/Common/PODArray.cpp)
+add_executable(exception_test test/exception_test.cpp src/Common/Exception.cpp src/Common/ErrorCodes.cpp src/Columns/ColumnConst.h src/Columns/ColumnConst.cpp src/Columns/ColumnsCommon.cpp src/common/demangle.cpp src/Columns/IColumn.cpp src/Common/PODArray.cpp src/Columns/ColumnNullable.cpp src/Columns/ColumnVector.cpp)
 target_link_libraries(exception_test boost_stacktrace_addr2line boost_stacktrace_basic boost_exception gtest)
 
-add_executable(column_vector_test test/column_vector_test src/Common/PODArray.cpp src/Columns/IColumn.cpp src/Columns/ColumnVector.cpp src/Common/Exception.cpp src/Common/ErrorCodes.cpp)
+add_executable(column_vector_test test/column_vector_test src/Common/PODArray.cpp src/Columns/IColumn.cpp src/Columns/ColumnVector.cpp src/Common/Exception.cpp src/Common/ErrorCodes.cpp src/Columns/ColumnConst.cpp src/Columns/ColumnNullable.cpp src/common/demangle.cpp src/Columns/ColumnsCommon.cpp)
 target_link_libraries(column_vector_test gtest pthread dl)
 
-add_executable(block_test test/block_test.cpp src/Core/BlockInfo.cpp src/Common/PODArray.cpp src/Common/ErrorCodes.cpp src/Common/Exception.cpp src/Core/Block.cpp src/Columns/IColumn.cpp src/Core/ColumnWithTypeAndName.cpp )
+add_executable(block_test test/block_test.cpp src/Core/BlockInfo.cpp src/Common/PODArray.cpp src/Common/ErrorCodes.cpp src/Common/Exception.cpp src/Core/Block.cpp src/Columns/IColumn.cpp src/Core/ColumnWithTypeAndName.cpp  src/Columns/ColumnConst.cpp src/Columns/ColumnNullable.cpp src/common/demangle.cpp src/Columns/ColumnsCommon.cpp src/Columns/ColumnVector.cpp)
 target_link_libraries(block_test gtest)
 

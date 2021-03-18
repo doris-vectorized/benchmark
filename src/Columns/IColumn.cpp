@@ -2,9 +2,9 @@
 //#include <IO/Operators.h>
 #include <sstream>
 #include <Columns/IColumn.h>
-//#include <Columns/ColumnNullable.h>
+#include <Columns/ColumnNullable.h>
 #include <Columns/ColumnConst.h>
-//#include <Core/Field.h>
+#include <Core/Field.h>
 
 
 namespace DB
@@ -31,14 +31,14 @@ void IColumn::insertFrom(const IColumn & src, size_t n)
     insert(src[n]);
 }
 
-//bool isColumnNullable(const IColumn & column)
-//{
-//    return checkColumn<ColumnNullable>(column);
-//}
+bool isColumnNullable(const IColumn & column)
+{
+    return checkColumn<ColumnNullable>(column);
+}
 
-//bool isColumnConst(const IColumn & column)
-//{
-//    return checkColumn<ColumnConst>(column);
-//}
+bool isColumnConst(const IColumn & column)
+{
+    return checkColumn<ColumnConst>(column);
+}
 
 }

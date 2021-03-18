@@ -3,8 +3,8 @@
 #include <Common/COW.h>
 #include <Common/PODArray_fwd.h>
 #include <Core/Types.h>
-//#include <Common/Exception.h>
-//#include <Common/typeid_cast.h>
+#include <Common/Exception.h>
+#include <Common/typeid_cast.h>
 #include <common/StringRef.h>
 #include <Core/Field.h>
 
@@ -412,32 +412,32 @@ template <>
 struct IsMutableColumns<> { static const bool value = true; };
 
 
-//template <typename Type>
-//const Type * checkAndGetColumn(const IColumn & column)
-//{
-//    return typeid_cast<const Type *>(&column);
-//}
-//
-//template <typename Type>
-//const Type * checkAndGetColumn(const IColumn * column)
-//{
-//    return typeid_cast<const Type *>(column);
-//}
+template <typename Type>
+const Type * checkAndGetColumn(const IColumn & column)
+{
+    return typeid_cast<const Type *>(&column);
+}
 
-//template <typename Type>
-//bool checkColumn(const IColumn & column)
-//{
-//    return checkAndGetColumn<Type>(&column);
-//}
-//
-//template <typename Type>
-//bool checkColumn(const IColumn * column)
-//{
-//    return checkAndGetColumn<Type>(column);
-//}
+template <typename Type>
+const Type * checkAndGetColumn(const IColumn * column)
+{
+    return typeid_cast<const Type *>(column);
+}
+
+template <typename Type>
+bool checkColumn(const IColumn & column)
+{
+    return checkAndGetColumn<Type>(&column);
+}
+
+template <typename Type>
+bool checkColumn(const IColumn * column)
+{
+    return checkAndGetColumn<Type>(column);
+}
 
 /// True if column's an ColumnConst instance. It's just a syntax sugar for type check.
-//bool isColumnConst(const IColumn & column);
+bool isColumnConst(const IColumn & column);
 
 /// True if column's an ColumnNullable instance. It's just a syntax sugar for type check.
 bool isColumnNullable(const IColumn & column);
