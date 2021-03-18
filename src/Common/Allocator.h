@@ -2,6 +2,7 @@
 
 #include <string.h>
 #include <exception>
+#include <fmt/format.h>
 
 #ifdef NDEBUG
     #define ALLOCATOR_ASLR 0
