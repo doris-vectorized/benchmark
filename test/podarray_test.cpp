@@ -1,5 +1,5 @@
-#include "Common/PODArray.h"
-#include "Common/PODArray_fwd.h"
+#include "vec/Common/PODArray.h"
+#include "vec/Common/PODArray_fwd.h"
 #include "gtest/gtest.h"
 
 namespace DB {

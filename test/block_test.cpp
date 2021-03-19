@@ -1,8 +1,8 @@
-#include "Core/Block.h"
-#include "Columns/ColumnVector.h"
-#include "DataTypes/DataTypesNumber.h"
+#include "vec/Core/Block.h"
+#include "vec/Columns/ColumnVector.h"
+#include "vec/DataTypes/DataTypesNumber.h"
 
-#include "Core/BlockInfo.h"
+#include "vec/Core/BlockInfo.h"
 #include "gtest/gtest.h"
 
 namespace DB {

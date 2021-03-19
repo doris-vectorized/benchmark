@@ -37,15 +37,15 @@ link_libraries(fmt pthread dl)
 add_executable(cow_test test/cow_test.cpp)
 target_link_libraries(cow_test gtest)
 
-add_executable(array_test test/podarray_test.cpp src/Common/PODArray.cpp src/Columns/IColumn.cpp src/Columns/ColumnVector.cpp src/Common/Exception.cpp src/Common/ErrorCodes.cpp src/Columns/ColumnConst.cpp src/Columns/ColumnNullable.cpp src/common/demangle.cpp src/Columns/ColumnsCommon.cpp)
+add_executable(array_test test/podarray_test.cpp src/vec/Common/PODArray.cpp src/vec/Columns/IColumn.cpp src/vec/Columns/ColumnVector.cpp src/vec/Common/Exception.cpp src/vec/Common/ErrorCodes.cpp src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp)
 target_link_libraries(array_test gtest pthread dl)
 
-add_executable(exception_test test/exception_test.cpp src/Common/Exception.cpp src/Common/ErrorCodes.cpp src/Columns/ColumnConst.h src/Columns/ColumnConst.cpp src/Columns/ColumnsCommon.cpp src/common/demangle.cpp src/Columns/IColumn.cpp src/Common/PODArray.cpp src/Columns/ColumnNullable.cpp src/Columns/ColumnVector.cpp)
+add_executable(exception_test test/exception_test.cpp src/vec/Common/Exception.cpp src/vec/Common/ErrorCodes.cpp src/vec/Columns/ColumnConst.h src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnsCommon.cpp src/vec/common/demangle.cpp src/vec/Columns/IColumn.cpp src/vec/Common/PODArray.cpp src/vec/Columns/ColumnNullable.cpp src/vec/Columns/ColumnVector.cpp)
 target_link_libraries(exception_test boost_stacktrace_addr2line boost_stacktrace_basic boost_exception gtest)
 
-add_executable(column_vector_test test/column_vector_test src/Common/PODArray.cpp src/Columns/IColumn.cpp src/Columns/ColumnVector.cpp src/Common/Exception.cpp src/Common/ErrorCodes.cpp src/Columns/ColumnConst.cpp src/Columns/ColumnNullable.cpp src/common/demangle.cpp src/Columns/ColumnsCommon.cpp)
+add_executable(column_vector_test test/column_vector_test src/vec/Common/PODArray.cpp src/vec/Columns/IColumn.cpp src/vec/Columns/ColumnVector.cpp src/vec/Common/Exception.cpp src/vec/Common/ErrorCodes.cpp src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp)
 target_link_libraries(column_vector_test gtest pthread dl)
 
-add_executable(block_test test/block_test.cpp src/Core/BlockInfo.cpp src/Common/PODArray.cpp src/Common/ErrorCodes.cpp src/Common/Exception.cpp src/Core/Block.cpp src/Columns/IColumn.cpp src/Core/ColumnWithTypeAndName.cpp src/DataTypes/IDataType.cpp src/DataTypes/NestedUtils.cpp src/Columns/ColumnConst.cpp src/Columns/ColumnNullable.cpp src/common/demangle.cpp src/Columns/ColumnsCommon.cpp src/DataTypes/DataTypesNumber.cpp src/DataTypes/DataTypeNumberBase.cpp src/Columns/ColumnVector.cpp)
+add_executable(block_test test/block_test.cpp src/vec/Core/BlockInfo.cpp src/vec/Common/PODArray.cpp src/vec/Common/ErrorCodes.cpp src/vec/Common/Exception.cpp src/vec/Core/Block.cpp src/vec/Columns/IColumn.cpp src/vec/Core/ColumnWithTypeAndName.cpp src/vec/DataTypes/IDataType.cpp src/vec/DataTypes/NestedUtils.cpp src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp src/vec/DataTypes/DataTypesNumber.cpp src/vec/DataTypes/DataTypeNumberBase.cpp src/vec/Columns/ColumnVector.cpp)
 target_link_libraries(block_test gtest)
 

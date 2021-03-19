@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "Common/COW.h"
+#include "vec/Common/COW.h"
 #include "gtest/gtest.h"
 
 class Ref : public COW<Ref> {
