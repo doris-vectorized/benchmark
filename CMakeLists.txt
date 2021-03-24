@@ -34,7 +34,7 @@ link_directories("thirdparty/install/lib/")
 link_directories("thirdparty/install/lib64/")
 link_libraries(fmt pthread dl)
 
-add_executable(cow_test test/cow_test.cpp)
+add_executable(cow_test test/cow_test.cpp src/vec/Functions/IFunction.cpp src/vec/Functions/FunctionHelpers.cpp)
 target_link_libraries(cow_test gtest)
 
 add_executable(array_test test/podarray_test.cpp src/vec/Common/PODArray.cpp src/vec/Columns/IColumn.cpp src/vec/Columns/ColumnVector.cpp src/vec/Common/Exception.cpp src/vec/Common/ErrorCodes.cpp src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp)
