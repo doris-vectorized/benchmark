@@ -34,7 +34,7 @@ link_directories("thirdparty/install/lib/")
 link_directories("thirdparty/install/lib64/")
 link_libraries(fmt pthread dl)
 
-add_executable(cow_test test/cow_test.cpp src/vec/Functions/IFunction.cpp src/vec/Functions/FunctionHelpers.cpp)
+add_executable(cow_test test/cow_test.cpp)
 target_link_libraries(cow_test gtest)
 
 add_executable(array_test test/podarray_test.cpp src/vec/Common/PODArray.cpp src/vec/Columns/IColumn.cpp src/vec/Columns/ColumnVector.cpp src/vec/Common/Exception.cpp src/vec/Common/ErrorCodes.cpp src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp)
@@ -46,7 +46,20 @@ target_link_libraries(exception_test boost_stacktrace_addr2line boost_stacktrace
 add_executable(column_vector_test test/column_vector_test src/vec/Common/PODArray.cpp src/vec/Columns/IColumn.cpp src/vec/Columns/ColumnVector.cpp src/vec/Common/Exception.cpp src/vec/Common/ErrorCodes.cpp src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp)
 target_link_libraries(column_vector_test gtest pthread dl)
 
-add_executable(block_test test/block_test.cpp src/vec/Core/BlockInfo.cpp src/vec/Common/PODArray.cpp src/vec/Common/ErrorCodes.cpp src/vec/Common/Exception.cpp src/vec/Core/Block.cpp src/vec/Columns/IColumn.cpp src/vec/Core/ColumnWithTypeAndName.cpp src/vec/DataTypes/IDataType.cpp src/vec/DataTypes/NestedUtils.cpp src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp src/vec/DataTypes/DataTypesNumber.cpp src/vec/DataTypes/DataTypeNumberBase.cpp src/vec/Columns/ColumnVector.cpp)
+add_executable(column_string_test test/column_string_test.cpp src/vec/Columns/ColumnString.cpp
+src/vec/Common/Exception.cpp
+        src/vec/DataTypes/IDataType.cpp src/vec/Columns/IColumn.cpp
+        src/vec/Common/ErrorCodes.cpp src/vec/Common/PODArray.cpp src/vec/Columns/Collator.cpp src/vec/common/demangle.cpp
+        src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp
+        src/vec/Common/ErrorCodes.cpp src/vec/Core/Block.cpp
+src/vec/Common/PODArray.cpp src/vec/Core/ColumnWithTypeAndName.cpp
+src/vec/DataTypes/IDataType.cpp src/vec/DataTypes/NestedUtils.cpp
+src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp
+src/vec/DataTypes/DataTypesNumber.cpp src/vec/DataTypes/DataTypeNumberBase.cpp
+src/vec/Columns/ColumnVector.cpp)
+target_link_libraries(column_string_test gtest pthread dl)
+
+add_executable(block_test test/block_test.cpp src/vec/Core/BlockInfo.cpp src/vec/Common/PODArray.cpp src/vec/Common/ErrorCodes.cpp src/vec/Common/Exception.cpp src/vec/Core/Block.cpp src/vec/Columns/IColumn.cpp src/vec/Core/ColumnWithTypeAndName.cpp src/vec/DataTypes/IDataType.cpp src/vec/DataTypes/NestedUtils.cpp src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp src/vec/DataTypes/DataTypesNumber.cpp src/vec/DataTypes/DataTypeNumberBase.cpp src/vec/Columns/ColumnVector.cpp src/vec/Columns/Collator.cpp)
 target_link_libraries(block_test gtest)
 
 add_executable(agg_test test/agg_test.cpp src/vec/AggregateFunctions/AggregateFunctionSum.cpp src/vec/Core/BlockInfo.cpp src/vec/Common/PODArray.cpp src/vec/Common/ErrorCodes.cpp src/vec/Common/Exception.cpp src/vec/Core/Block.cpp src/vec/Columns/IColumn.cpp src/vec/Core/ColumnWithTypeAndName.cpp src/vec/DataTypes/IDataType.cpp src/vec/DataTypes/NestedUtils.cpp src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp src/vec/DataTypes/DataTypesNumber.cpp src/vec/DataTypes/DataTypeNumberBase.cpp src/vec/Columns/ColumnVector.cpp)
