@@ -77,3 +77,7 @@ src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp
 src/vec/DataTypes/DataTypesNumber.cpp src/vec/DataTypes/DataTypeNumberBase.cpp
 src/vec/Columns/ColumnVector.cpp)
 target_link_libraries(abs_function_test gtest)
+
+
+add_executable(column_const_test  test/column_const_test.cpp  src/vec/Core/BlockInfo.cpp src/vec/Common/PODArray.cpp src/vec/Common/ErrorCodes.cpp src/vec/Common/Exception.cpp src/vec/Core/Block.cpp src/vec/Columns/IColumn.cpp src/vec/Core/ColumnWithTypeAndName.cpp src/vec/DataTypes/IDataType.cpp src/vec/DataTypes/NestedUtils.cpp src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp src/vec/DataTypes/DataTypesNumber.cpp src/vec/DataTypes/DataTypeNumberBase.cpp src/vec/Columns/ColumnVector.cpp  src/vec/Columns/ColumnConst.cpp)
+target_link_libraries(column_const_test  gtest)
