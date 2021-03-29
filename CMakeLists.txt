@@ -65,6 +65,18 @@ target_link_libraries(block_test gtest)
 add_executable(agg_test test/agg_test.cpp src/vec/AggregateFunctions/AggregateFunctionSum.cpp src/vec/Core/BlockInfo.cpp src/vec/Common/PODArray.cpp src/vec/Common/ErrorCodes.cpp src/vec/Common/Exception.cpp src/vec/Core/Block.cpp src/vec/Columns/IColumn.cpp src/vec/Core/ColumnWithTypeAndName.cpp src/vec/DataTypes/IDataType.cpp src/vec/DataTypes/NestedUtils.cpp src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp src/vec/DataTypes/DataTypesNumber.cpp src/vec/DataTypes/DataTypeNumberBase.cpp src/vec/Columns/ColumnVector.cpp)
 target_link_libraries(agg_test gtest)
 
+add_executable(decimal_test test/column_decimal_test.cpp  src/vec/Columns/ColumnDecimal.cpp src/vec/Common/PODArray.cpp src/vec/Common/ErrorCodes.cpp src/vec/Common/Exception.cpp src/vec/Columns/IColumn.cpp src/vec/DataTypes/IDataType.cpp src/vec/DataTypes/NestedUtils.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp src/vec/DataTypes/DataTypesDecimal.cpp src/vec/Core/Field.cpp
+        src/vec/Columns/ColumnNullable.cpp src/vec/Columns/ColumnConst.cpp
+        src/vec/Common/ErrorCodes.cpp src/vec/Core/Block.cpp
+src/vec/Common/PODArray.cpp src/vec/Core/ColumnWithTypeAndName.cpp
+src/vec/DataTypes/IDataType.cpp src/vec/DataTypes/NestedUtils.cpp
+src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp
+        src/vec/DataTypes/DataTypesNumber.cpp src/vec/DataTypes/DataTypeNumberBase.cpp
+src/vec/Columns/ColumnVector.cpp
+)
+
+target_link_libraries(decimal_test gtest)
+
 add_executable(abs_function_test test/abs_function_test.cpp
 src/vec/Functions/IFunction.cpp src/vec/Functions/FunctionHelpers.cpp
 src/vec/Common/Exception.cpp
