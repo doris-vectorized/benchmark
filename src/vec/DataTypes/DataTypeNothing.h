@@ -2,6 +2,8 @@
 
 // #include <vec/DataTypes/IDataTypeDummy.h>
 #include <vec/DataTypes/IDataType.h>
+#include <vec/Common/Exception.h>
+#include <vec/Core/Field.h>
 
 
 namespace DB
@@ -32,6 +34,12 @@ public:
     bool haveMaximumSizeOfValue() const override { return true; }
     size_t getSizeOfValueInMemory() const override { return 0; }
     bool canBeInsideNullable() const override { return true; }
+
+    bool haveSubtypes() const override { return false; }
+    Field getDefault() const override
+    {
+        throw Exception("Method getDefault() is not implemented for data type " + getName(), ErrorCodes::NOT_IMPLEMENTED);
+    }
 };
 
 }
