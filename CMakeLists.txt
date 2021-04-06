@@ -56,7 +56,17 @@ src/vec/Common/PODArray.cpp src/vec/Core/ColumnWithTypeAndName.cpp
 src/vec/DataTypes/IDataType.cpp src/vec/DataTypes/NestedUtils.cpp
 src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp
 src/vec/DataTypes/DataTypesNumber.cpp src/vec/DataTypes/DataTypeNumberBase.cpp
-src/vec/Columns/ColumnVector.cpp)
+src/vec/Columns/ColumnVector.cpp
+     src/vec/Functions/FunctionsLogical.cpp
+        src/vec/DataTypes/data_type_string.cpp
+        src/vec/DataTypes/getLeastSupertype.cpp
+        src/vec/DataTypes/DataTypesDecimal.cpp
+        src/vec/DataTypes/DataTypeNullable.cpp
+        src/vec/DataTypes/DataTypeNothing.cpp
+        src/vec/Columns/ColumnDecimal.cpp
+        src/vec/Core/Field.cpp
+        src/vec/Functions/greater.cpp)
+
 target_link_libraries(column_string_test gtest pthread dl)
 
 add_executable(block_test test/block_test.cpp src/vec/Core/BlockInfo.cpp src/vec/Common/PODArray.cpp src/vec/Common/ErrorCodes.cpp src/vec/Common/Exception.cpp src/vec/Core/Block.cpp src/vec/Columns/IColumn.cpp src/vec/Core/ColumnWithTypeAndName.cpp src/vec/DataTypes/IDataType.cpp src/vec/DataTypes/NestedUtils.cpp src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp src/vec/DataTypes/DataTypesNumber.cpp src/vec/DataTypes/DataTypeNumberBase.cpp src/vec/Columns/ColumnVector.cpp src/vec/Columns/Collator.cpp)
@@ -96,3 +106,26 @@ target_link_libraries(abs_function_test gtest)
 
 add_executable(column_const_test  test/column_const_test.cpp  src/vec/Core/BlockInfo.cpp src/vec/Common/PODArray.cpp src/vec/Common/ErrorCodes.cpp src/vec/Common/Exception.cpp src/vec/Core/Block.cpp src/vec/Columns/IColumn.cpp src/vec/Core/ColumnWithTypeAndName.cpp src/vec/DataTypes/IDataType.cpp src/vec/DataTypes/NestedUtils.cpp src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp src/vec/DataTypes/DataTypesNumber.cpp src/vec/DataTypes/DataTypeNumberBase.cpp src/vec/Columns/ColumnVector.cpp  src/vec/Columns/ColumnConst.cpp)
 target_link_libraries(column_const_test  gtest)
+
+
+add_executable(comparation_function_test test/comparation_function_test.cpp src/vec/Columns/ColumnString.cpp
+src/vec/Common/Exception.cpp
+        src/vec/DataTypes/IDataType.cpp src/vec/Columns/IColumn.cpp
+        src/vec/Common/ErrorCodes.cpp src/vec/Common/PODArray.cpp src/vec/Columns/Collator.cpp src/vec/common/demangle.cpp
+        src/vec/Columns/ColumnConst.cpp src/vec/Columns/ColumnNullable.cpp
+        src/vec/Common/ErrorCodes.cpp src/vec/Core/Block.cpp
+src/vec/Common/PODArray.cpp src/vec/Core/ColumnWithTypeAndName.cpp
+src/vec/DataTypes/IDataType.cpp src/vec/DataTypes/NestedUtils.cpp
+src/vec/common/demangle.cpp src/vec/Columns/ColumnsCommon.cpp
+src/vec/DataTypes/DataTypesNumber.cpp src/vec/DataTypes/DataTypeNumberBase.cpp
+src/vec/Columns/ColumnVector.cpp
+     src/vec/Functions/FunctionsLogical.cpp
+        src/vec/DataTypes/data_type_string.cpp
+        src/vec/DataTypes/getLeastSupertype.cpp
+        src/vec/DataTypes/DataTypesDecimal.cpp
+        src/vec/DataTypes/DataTypeNullable.cpp
+        src/vec/DataTypes/DataTypeNothing.cpp
+        src/vec/Columns/ColumnDecimal.cpp
+        src/vec/Core/Field.cpp
+        src/vec/Functions/greater.cpp)
+target_link_libraries(comparation_function_test  gtest)

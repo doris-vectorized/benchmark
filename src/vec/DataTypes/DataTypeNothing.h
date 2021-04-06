@@ -3,11 +3,15 @@
 // #include <vec/DataTypes/IDataTypeDummy.h>
 #include <vec/DataTypes/IDataType.h>
 #include <vec/Common/Exception.h>
-#include <vec/Core/Field.h>
-
+#include "vec/Core/Field.h"
 
 namespace DB
 {
+
+namespace ErrorCodes
+{
+    extern const int NOT_IMPLEMENTED;
+}
 
 /** Data type that cannot have any values.
   * Used to represent NULL of unknown type as Nullable(Nothing),
@@ -39,7 +43,9 @@ public:
     Field getDefault() const override
     {
         throw Exception("Method getDefault() is not implemented for data type " + getName(), ErrorCodes::NOT_IMPLEMENTED);
+        return {};
     }
+
 };
 
 }
