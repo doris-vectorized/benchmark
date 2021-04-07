@@ -18,12 +18,12 @@ f = open(path,"r",encoding="utf-8")
 lines = f.readlines()
 
 for loc, line in enumerate(lines):
-	if line.startswith("#include") and not "llvm" in line:
+	if line.startswith("#include <") and not "llvm" in line:
 		new_line = line.strip().strip("#include ").strip("<").strip(">\n")
 		strs = new_line.split("/")
 		for i, str in enumerate(strs):
 			strs[i] = to_proper_name(str)
-		lines[loc] = "#include <" + "/".join(strs) + ">" + "\n"
+		lines[loc] = '#include "' + "/".join(strs) + '"' + "\n"
 f.close()
 
 f = open(path,"w",encoding="utf-8")

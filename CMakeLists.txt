@@ -127,5 +127,6 @@ src/vec/Columns/ColumnVector.cpp
         src/vec/DataTypes/DataTypeNothing.cpp
         src/vec/Columns/ColumnDecimal.cpp
         src/vec/Core/Field.cpp
-        src/vec/Functions/greater.cpp)
+        src/vec/Functions/greater.cpp
+        src/vec/Functions/intDiv.cpp)
 target_link_libraries(comparation_function_test  gtest)
