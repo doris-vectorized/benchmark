@@ -4,6 +4,7 @@
 #include <vec/Common/COW.h>
 #include <boost/noncopyable.hpp>
 #include <vec/Core/Types.h>
+#include <vec/Common/StringBuffer.hpp>
 // #include <vec/DataTypes/DataTypeCustom.h>
 
 
@@ -56,6 +57,9 @@ public:
 
     /// Data type id. It's used for runtime type checks.
     virtual TypeIndex getTypeId() const = 0;
+
+    virtual void to_string(const IColumn & column, size_t row_num, BufferWritable & ostr) const;
+
 
     /** Binary serialization for range of values in column - for writing to disk/network, etc.
       *

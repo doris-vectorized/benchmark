@@ -144,12 +144,12 @@ inline bool callOnBasicTypes(TypeIndex type_num1, TypeIndex type_num2, F && f)
 }
 
 
-class DataTypeDate;
-class DataTypeDateTime;
+// class DataTypeDate;
+// class DataTypeDateTime;
 class DataTypeString;
-class DataTypeFixedString;
-class DataTypeUUID;
-template <typename T> class DataTypeEnum;
+// class DataTypeFixedString;
+// class DataTypeUUID;
+// template <typename T> class DataTypeEnum;
 template <typename T> class DataTypeNumber;
 template <typename T> class DataTypeDecimal;
 
@@ -176,16 +176,16 @@ bool callOnIndexAndDataType(TypeIndex number, F && f)
         case TypeIndex::Decimal64:      return f(TypePair<DataTypeDecimal<Decimal64>, T>());
         case TypeIndex::Decimal128:     return f(TypePair<DataTypeDecimal<Decimal128>, T>());
 
-        case TypeIndex::Date:           return f(TypePair<DataTypeDate, T>());
-        case TypeIndex::DateTime:       return f(TypePair<DataTypeDateTime, T>());
+        // case TypeIndex::Date:           return f(TypePair<DataTypeDate, T>());
+        // case TypeIndex::DateTime:       return f(TypePair<DataTypeDateTime, T>());
 
         case TypeIndex::String:         return f(TypePair<DataTypeString, T>());
-        case TypeIndex::FixedString:    return f(TypePair<DataTypeFixedString, T>());
+        // case TypeIndex::FixedString:    return f(TypePair<DataTypeFixedString, T>());
 
-        case TypeIndex::Enum8:          return f(TypePair<DataTypeEnum<Int8>, T>());
-        case TypeIndex::Enum16:         return f(TypePair<DataTypeEnum<Int16>, T>());
+        // case TypeIndex::Enum8:          return f(TypePair<DataTypeEnum<Int8>, T>());
+        // case TypeIndex::Enum16:         return f(TypePair<DataTypeEnum<Int16>, T>());
 
-        case TypeIndex::UUID:           return f(TypePair<DataTypeUUID, T>());
+        // case TypeIndex::UUID:           return f(TypePair<DataTypeUUID, T>());
 
         default:
             break;

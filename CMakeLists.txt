@@ -127,6 +127,14 @@ src/vec/Columns/ColumnVector.cpp
         src/vec/DataTypes/DataTypeNothing.cpp
         src/vec/Columns/ColumnDecimal.cpp
         src/vec/Core/Field.cpp
-        src/vec/Functions/greater.cpp
-        src/vec/Functions/intDiv.cpp)
+        src/vec/Functions/greater.cpp)
+
 target_link_libraries(comparation_function_test  gtest)
+
+file(GLOB_RECURSE VEC_SOURCE ./src/vec/*.cpp)
+
+file(GLOB EXCUDE "./src/vec/Functions/intDiv.cpp")
+list(REMOVE_ITEM VEC_SOURCE ${EXCUDE})
+
+add_executable(cast_function_test test/cast_function_test.cpp ${VEC_SOURCE})
+target_link_libraries(cast_function_test gtest)
