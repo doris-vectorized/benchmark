@@ -1,12 +1,12 @@
-#include "vec/Common/Exception.h"
+#include "vec/common/exception.h"
 
 #include "gtest/gtest.h"
 
-namespace DB {
+namespace doris::vectorized {
 TEST(ExceptionTest, ExceptionTest) {
     try {
         throw ErrnoException("haha", 1, 2);
-    } catch (DB::Exception& e) {
+    } catch (Exception& e) {
         auto st = e.getStackTrace().value();
         std::cerr << st << '\n';
         std::cout << e.what() << std::endl;

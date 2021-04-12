@@ -1,11 +1,11 @@
-#include "vec/Core/Block.h"
-#include "vec/Columns/ColumnVector.h"
-#include "vec/DataTypes/DataTypesNumber.h"
+#include "vec/core/block.h"
+#include "vec/columns/column_vector.h"
+#include "vec/data_types/data_types_number.h"
 
-#include "vec/Core/BlockInfo.h"
+#include "vec/core/block_info.h"
 #include "gtest/gtest.h"
 
-namespace DB {
+namespace doris::vectorized {
 TEST(BlockTest, BlockInfoTest) {
     BlockInfo info;
 }

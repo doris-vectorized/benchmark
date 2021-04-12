@@ -2,17 +2,17 @@
 #include <memory>
 #include <string>
 
-#include "vec/AggregateFunctions/AggregateFunctionSimpleFactory.h"
-#include "vec/AggregateFunctions/IAggregateFunction.h"
-#include "vec/Columns/ColumnVector.h"
-#include "vec/DataTypes/DataTypesNumber.h"
-#include "vec/DataTypes/IDataType.h"
+#include "vec/aggregate_functions/aggregate_function_simple_factory.h"
+#include "vec/aggregate_functions/aggregate_function.h"
+#include "vec/columns/column_vector.h"
+#include "vec/data_types/data_types_number.h"
+#include "vec/data_types/data_type.h"
 #include "gtest/gtest.h"
 
-#include "vec/Columns/ColumnNullable.h"
-#include "vec/AggregateFunctions/AggregateFunctionNull.h"
+#include "vec/columns/column_nullable.h"
+#include "vec/aggregate_functions/aggregate_function_null.h"
 
-namespace DB {
+namespace doris::vectorized {
 // declare function
 void registerAggregateFunctionSum(AggregateFunctionSimpleFactory& factory);
 void registerAggregateFunctionCombinatorNull(AggregateFunctionSimpleFactory & factory);

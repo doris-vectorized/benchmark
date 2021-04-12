@@ -1,8 +1,8 @@
-#include "vec/Common/PODArray.h"
-#include "vec/Common/PODArray_fwd.h"
+#include "vec/common/pod_array.h"
+#include "vec/common/pod_array_fwd.h"
 #include "gtest/gtest.h"
 
-namespace DB {
+namespace doris::vectorized {
 struct PODPoint {
   int x;
   int y;

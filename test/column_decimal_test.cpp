@@ -1,8 +1,8 @@
-#include "vec/Columns/ColumnDecimal.h"
+#include "vec/columns/column_decimal.h"
 
 #include "gtest/gtest.h"
 
-namespace DB {
+namespace doris::vectorized {
 TEST(ColumnDecimalTest, ColumnDecimalTest) {
    auto column_decimal_vector = ColumnDecimal<Decimal128>::create(4, 9);
    column_decimal_vector->insertDefault();

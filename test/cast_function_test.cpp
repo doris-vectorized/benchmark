@@ -1,8 +1,8 @@
 #include "gtest/gtest.h"
-#include "vec/Core/Block.h"
-#include "vec/Functions/FunctionCast.h"
+#include "vec/core/block.h"
+#include "vec/functions/function_cast.h"
 
-namespace DB {
+namespace doris::vectorized {
 TEST(FunctionCastTest, NumberInnerCast) {
     auto vec = ColumnVector<Int32>::create();
     auto& data = vec->getData();
@@ -15,7 +15,7 @@ TEST(FunctionCastTest, NumberInnerCast) {
     DataTypePtr data_type_2(std::make_shared<DataTypeInt64>());
     ColumnWithTypeAndName type_and_name_2(nullptr, data_type, "To");
 
-    DB::ColumnNumbers arguments(1);
+    ColumnNumbers arguments(1);
     arguments[0] = 0;
 
     Block block({type_and_name, type_and_name_2});
@@ -49,7 +49,7 @@ TEST(FunctionCastTest, DecimalNumberCast) {
         ColumnWithTypeAndName argument_type_and_name(param->getPtr(), argument_type, "From");
 
         Block block({type_and_name_1, type_and_name_2, argument_type_and_name});
-        DB::ColumnNumbers arguments(2); // here we need to arguments
+        ColumnNumbers arguments(2); // here we need to arguments
         arguments[0] = 0;
         arguments[1] = 2;
         const ColumnWithTypeAndName& scale_column = block.getByPosition(arguments[1]);
@@ -83,7 +83,7 @@ TEST(FunctionCastTest, DecimalNumberCast) {
         ColumnWithTypeAndName i32_ctan(nullptr, data_type_i32, "From");
 
         Block block({decimal_column_ctan, i32_ctan});
-        DB::ColumnNumbers arguments(1); // here we need to arguments
+        ColumnNumbers arguments(1); // here we need to arguments
         arguments[0] = 0;
         ConvertImpl<DataTypeDecimal<Decimal128>, DataTypeInt32, NameCast>::execute(block, arguments,
                                                                                    1, -1);
@@ -115,7 +115,7 @@ TEST(FunctionCastTest, BasicCastString) {
         ColumnWithTypeAndName type_and_name_2(nullptr, data_type_2, "To");
 
         Block block({type_and_name_1, type_and_name_2});
-        DB::ColumnNumbers arguments(1); // here we need to arguments
+        ColumnNumbers arguments(1); // here we need to arguments
         arguments[0] = 0;
 
         int result = 1;

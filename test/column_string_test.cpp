@@ -1,8 +1,8 @@
-#include "vec/Columns/ColumnString.h"
+#include "vec/columns/column_string.h"
 
 #include "gtest/gtest.h"
 
-namespace DB {
+namespace doris::vectorized {
 TEST(ColumnStringTest, ColumnStringTest) {
    auto column_string = ColumnString::create();
 

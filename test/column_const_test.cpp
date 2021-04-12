@@ -1,8 +1,8 @@
 #include "gtest/gtest.h"
-#include "vec/Columns/ColumnConst.h"
-#include "vec/Columns/ColumnsNumber.h"
+#include "vec/columns/column_const.h"
+#include "vec/columns/columns_number.h"
 
-namespace DB {
+namespace doris::vectorized {
 TEST(ColumnConstTest, BasicTest) {
     auto c32 = ColumnInt32::create();
     c32->insertDefault();

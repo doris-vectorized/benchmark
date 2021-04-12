@@ -1,8 +1,8 @@
-#include "vec/Columns/ColumnVector.h"
+#include "vec/columns/column_vector.h"
 
 #include "gtest/gtest.h"
 
-namespace DB {
+namespace doris::vectorized {
 TEST(ColumnVectorTest, ColumnVectorTest) {
    auto column_vector_int32 = ColumnVector<Int32>::create();
    column_vector_int32->insertDefault();
