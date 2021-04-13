@@ -5,7 +5,7 @@ add_definitions(-std=c++17)
 
 set(CXX_GCC_FLAGS "${CXX_GCC_FLAGS} -fno-omit-frame-pointer -Wall")
 
-set(CXX_FLAGS_DEBUG "${CXX_GCC_FLAGS} -Werror -ggdb3 -O0 -gdwarf-2 ")
+set(CXX_FLAGS_DEBUG "${CXX_GCC_FLAGS} -Werror -Wignored-attributes -ggdb3 -O0 -gdwarf-2 ")
 #set(CXX_FLAGS_RELEASE "${CXX_GCC_FLAGS} -O3 -gdwarf-2 -DNDEBUG -fopt-info-vec-optimized -fopt-info-vec-missed")
 set(CXX_FLAGS_RELEASE "${CXX_GCC_FLAGS} -O3 -fPIC -gdwarf-2 -DNDEBUG")
 
@@ -25,10 +25,6 @@ endif()
 
 include_directories("thirdparty/install/include")
 include_directories("src/")
-include_directories("libs/libcommon/include")
-#include_directories("libs/libpcg-random/include")
-include_directories("libs/cityhash102/include")
-link_directories("libs/cityhash102/gcc10-build/")
 #FILE(GLOB COMMON_SOURCE "src/Common/*.cpp")
 
 link_directories("thirdparty/install/lib/")
