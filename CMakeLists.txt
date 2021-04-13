@@ -76,3 +76,6 @@ target_link_libraries(comparation_function_test  gtest)
 
 add_executable(cast_function_test test/cast_function_test.cpp ${VEC_SOURCE})
 target_link_libraries(cast_function_test gtest)
+
+add_executable(binary_arithmetic_test test/binary_arithmetic_test.cpp ${VEC_SOURCE})
+target_link_libraries(binary_arithmetic_test gtest)

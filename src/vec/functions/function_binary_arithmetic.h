@@ -414,10 +414,13 @@ public:
         Case<!IsDataTypeDecimal<LeftDataType> && IsDataTypeDecimal<RightDataType> && IsIntegral<LeftDataType>, RightDataType>,
         /// Decimal <op> Real is not supported (traditional DBs convert Decimal <op> Real to Real)
         Case<IsDataTypeDecimal<LeftDataType> && !IsDataTypeDecimal<RightDataType> && !IsIntegral<RightDataType>, InvalidType>,
-        Case<!IsDataTypeDecimal<LeftDataType> && IsDataTypeDecimal<RightDataType> && !IsIntegral<LeftDataType>, InvalidType>>;
+        Case<!IsDataTypeDecimal<LeftDataType> && IsDataTypeDecimal<RightDataType> && !IsIntegral<LeftDataType>, InvalidType>,
+    /// number <op> number -> see corresponding impl
+        Case<!IsDataTypeDecimal<LeftDataType> && !IsDataTypeDecimal<RightDataType>,
+            DataTypeFromFieldType<typename Op::ResultType>>>;
         /// number <op> number -> see corresponding impl
 //        Case<!IsDateOrDateTime<LeftDataType> && !IsDateOrDateTime<RightDataType>,
-//            DataTypeFromFieldType<typename Op::ResultType>>,
+//            DataTypeFromFieldType<typename Op::ResultType>>>;
 //        /// Date + Integral -> Date
 //        /// Integral + Date -> Date
 //        Case<std::is_same_v<Op, PlusImpl<T0, T1>>, Switch<
@@ -442,7 +445,7 @@ public:
 template <template <typename, typename> class Op, typename Name, bool CanBeExecutedOnDefaultArguments = true>
 class FunctionBinaryArithmetic : public IFunction
 {
-    const Context & context;
+//    const Context & context;
     bool check_decimal_overflow = true;
 
     template <typename F>
@@ -661,13 +664,18 @@ class FunctionBinaryArithmetic : public IFunction
 
 public:
     static constexpr auto name = Name::name;
-    static FunctionPtr create(const Context & context) { return std::make_shared<FunctionBinaryArithmetic>(context); }
+//    static FunctionPtr create(const Context & context) { return std::make_shared<FunctionBinaryArithmetic>(context); }
+    static FunctionPtr create() { return std::make_shared<FunctionBinaryArithmetic>(); }
 
-    FunctionBinaryArithmetic(const Context & context_)
-    :   context(context_),
-        check_decimal_overflow(decimalCheckArithmeticOverflow(context))
+//    FunctionBinaryArithmetic(const Context & context_)
+//    :   context(context_),
+//        check_decimal_overflow(decimalCheckArithmeticOverflow(context))
+//    {}
+
+        FunctionBinaryArithmetic()
+//        : context(context_),
+//        : check_decimal_overflow(decimalCheckArithmeticOverflow(context))
     {}
-
     String getName() const override
     {
         return name;
@@ -677,23 +685,23 @@ public:
 
     DataTypePtr getReturnTypeImpl(const DataTypes & arguments) const override
     {
-        /// Special case when multiply aggregate function state
-        if (isAggregateMultiply(arguments[0], arguments[1]))
-        {
-            if (WhichDataType(arguments[0]).isAggregateFunction())
-                return arguments[0];
-            return arguments[1];
-        }
+//        /// Special case when multiply aggregate function state
+//        if (isAggregateMultiply(arguments[0], arguments[1]))
+//        {
+//            if (WhichDataType(arguments[0]).isAggregateFunction())
+//                return arguments[0];
+//            return arguments[1];
+//        }
 
         /// Special case - addition of two aggregate functions states
-        if (isAggregateAddition(arguments[0], arguments[1]))
-        {
-            if (!arguments[0]->equals(*arguments[1]))
-                throw Exception("Cannot add aggregate states of different functions: "
-                    + arguments[0]->getName() + " and " + arguments[1]->getName(), ErrorCodes::CANNOT_ADD_DIFFERENT_AGGREGATE_STATES);
-
-            return arguments[0];
-        }
+//        if (isAggregateAddition(arguments[0], arguments[1]))
+//        {
+//            if (!arguments[0]->equals(*arguments[1]))
+//                throw Exception("Cannot add aggregate states of different functions: "
+//                    + arguments[0]->getName() + " and " + arguments[1]->getName(), ErrorCodes::CANNOT_ADD_DIFFERENT_AGGREGATE_STATES);
+//
+//            return arguments[0];
+//        }
 
 //        /// Special case when the function is plus or minus, one of arguments is Date/DateTime and another is Interval.
 //        if (auto function_builder = getFunctionForIntervalArithmetic(arguments[0], arguments[1]))
