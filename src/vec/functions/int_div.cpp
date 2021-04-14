@@ -1,4 +1,5 @@
 //#include "vec/functions/function_factory.h"
+#include "vec/functions/simple_function_factory.h"
 #include "vec/functions/function_binary_arithmetic.h"
 #include "vec/functions/int_div.h"
 
@@ -93,12 +94,11 @@ template <> struct BinaryOperationImpl<Int32, Int32, DivideIntegralImpl<Int32, I
 template <> struct BinaryOperationImpl<Int32, Int64, DivideIntegralImpl<Int32, Int64>> : DivideIntegralByConstantImpl<Int32, Int64> {};
 
 
-struct NameIntDiv { static constexpr auto name = "intDiv"; };
+struct NameIntDiv { static constexpr auto name = "int_divide"; };
 using FunctionIntDiv = FunctionBinaryArithmetic<DivideIntegralImpl, NameIntDiv, false>;
 
-//void registerFunctionIntDiv(FunctionFactory & factory)
-//{
-//    factory.registerFunction<FunctionIntDiv>();
-//}
+void registerFunctionIntDiv(SimpleFunctionFactory& factory) {
+    factory.registerFunction<FunctionIntDiv>();
+}
 
 }
