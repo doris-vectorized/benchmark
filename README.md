@@ -12,7 +12,6 @@ bash build.sh
 
 ## 测试
 ```
-cd build;
-for tst in `find -name '*_test'`; do $tst; done
+bash test.sh
 ```
 ## 讨论
