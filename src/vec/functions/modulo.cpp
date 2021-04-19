@@ -3,7 +3,7 @@
 #include "vec/functions/function_binary_arithmetic.h"
 
 #ifdef __SSE2__
-    #define LIBDIVIDE_USE_SSE2 1
+    #define LIBDIVIDE_SSE2 1
 #endif
 
 #include "vec/common/libdivide.h"
