@@ -17,7 +17,6 @@ TEST(ColumnStringTest, ColumnStringTest) {
    ASSERT_STREQ(f1.c_str(), column_string->getDataAt(0).toString().c_str());
    ASSERT_STREQ(f2.c_str(), column_string->getDataAt(1).toString().c_str());
    ASSERT_STREQ(f3.c_str(), column_string->getDataAt(2).toString().c_str());
-
 }
 } // namespace DB
 

@@ -80,3 +80,5 @@ target_link_libraries(binary_arithmetic_test gtest)
 add_executable(hash_table_test test/hash_table_test.cpp ${VEC_SOURCE})
 target_link_libraries(hash_table_test gtest cityhash)
 
+add_executable(permutation_test test/permutation_test.cpp ${VEC_SOURCE})
+target_link_libraries(permutation_test gtest)
