@@ -37,7 +37,7 @@ file(GLOB_RECURSE VEC_SOURCE ./src/vec/*.cpp)
 #list(REMOVE_ITEM VEC_SOURCE ${EXCUDE})
 
 add_executable(cow_test test/cow_test.cpp)
-target_link_libraries(cow_test gtest)
+target_link_libraries(cow_test gtest pthread)
 
 add_executable(array_test test/podarray_test.cpp ${VEC_SOURCE})
 target_link_libraries(array_test gtest pthread dl)
