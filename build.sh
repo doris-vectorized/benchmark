@@ -1,4 +1,5 @@
-source ./env.sh
+[[ -s "./env.sh" ]] && source "./env.sh"
+
 BASE=`pwd`
 PARALLEL=56
 

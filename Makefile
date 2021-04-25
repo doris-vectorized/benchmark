@@ -1,5 +1,5 @@
-export CC=/opt/compiler/gcc-10/bin/gcc
-export CXX=/opt/compiler/gcc-10/bin/g++
+export CC=gcc
+export CXX=g++
 export BOOST_ROOT=./thirdparty/boost_1_73_0
 export CITY_HASH=./thirdparty/cityhash102
 export THIRDPARTY_INSTALL=$(shell pwd)/thirdparty/install
