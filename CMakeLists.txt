@@ -23,6 +23,7 @@ endif()
 
 add_subdirectory("thirdparty/googletest")
 add_subdirectory("thirdparty/benchmark")
+add_subdirectory("thirdparty/fmt")
 
 include_directories("thirdparty/install/include")
 include_directories("src/")
