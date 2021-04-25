@@ -7,4 +7,4 @@ make
 cd $BASE
 mkdir build;
 cd build;
-cmake .. -DCMAKE_BUILD_TYPE=Debug && make -j$PARALLEL 
+cmake .. -DCMAKE_BUILD_TYPE=Debug $LIBRT && make -j$PARALLEL 
