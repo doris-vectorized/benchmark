@@ -73,6 +73,16 @@ TEST(HashTableTest, hash_table_test) {
     });
 
     ASSERT_EQ(key_columns[0]->getInt(0), key);
+
+    auto iter = data.begin();
+    auto end = data.end();
+    while(iter!=end) {
+        const auto & key = iter->getFirst();
+        auto &mapped = iter->getSecond();
+        method.insertKeyIntoColumns(key, key_columns, key_sizes);
+        ASSERT_TRUE(mapped != nullptr);
+        ++iter;
+    }
 }
 } // namespace doris::vectorized
 
