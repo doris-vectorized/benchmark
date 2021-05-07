@@ -53,6 +53,7 @@ public:
     Block() = default;
     Block(std::initializer_list<ColumnWithTypeAndName> il);
     Block(const ColumnsWithTypeAndName& data_);
+    Block(const PBlock& pblock);
 
     /// insert the column at the specified position
     void insert(size_t position, const ColumnWithTypeAndName& elem);
@@ -100,6 +101,9 @@ public:
     /// Returns number of rows from first column in block, not equal to nullptr. If no columns, returns 0.
     size_t rows() const;
 
+    // Cut the rows in block, use in LIMIT operation
+    void set_num_rows(size_t length);
+
     size_t columns() const { return data.size(); }
 
     /// Checks that every column in block is not nullptr and has same number of elements.
@@ -143,6 +147,7 @@ public:
 
     void clear();
     void swap(Block& other) noexcept;
+    void swap(Block&& other) noexcept;
 
     /** Updates SipHash of the Block, using update method of columns.
       * Returns hash for block, that could be used to differentiate blocks
@@ -151,9 +156,11 @@ public:
     void updateHash(SipHash& hash) const;
 
     /** Get block data in string. */
-    std::string dumpData() const;
+    std::string dumpData(size_t row_limit = 100) const;
 
     static void filter_block(Block* block, int filter_conlumn_id, int column_to_keep);
+    // serialize block to PRowBatch
+    void serialize(PBlock* pblock) const;
 
 private:
     void eraseImpl(size_t position);
@@ -173,5 +180,87 @@ using BlocksPtrs = std::shared_ptr<std::vector<BlocksPtr>>;
 
 /// Calculate difference in structure of blocks and write description into output strings. NOTE It doesn't compare values of constant columns.
 // void getBlocksDifference(const Block & lhs, const Block & rhs, std::string & out_lhs_diff, std::string & out_rhs_diff);
+
+class MutableBlock {
+private:
+    MutableColumns _columns;
+    DataTypes _data_types;
+
+public:
+    MutableBlock() = default;
+    ~MutableBlock() = default;
+
+    MutableBlock(MutableColumns&& columns, DataTypes&& data_types)
+            : _columns(std::move(columns)), _data_types(std::move(data_types)) {}
+    MutableBlock(Block* block)
+            : _columns(block->mutateColumns()), _data_types(block->getDataTypes()) {}
+
+    size_t rows() const;
+    size_t columns() const { return _columns.size(); }
+
+    bool empty() { return rows() == 0; }
+
+    MutableColumns& mutable_columns() { return _columns; }
+
+    DataTypes& data_types() { return _data_types; }
+
+    void merge(Block&& block) {
+        if (_columns.size() == 0 && _data_types.size() == 0) {
+            _data_types = std::move(block.getDataTypes());
+            _columns.resize(block.columns());
+            for (size_t i = 0; i < block.columns(); ++i) {
+                if (block.getByPosition(i).column) {
+                    _columns[i] =
+                            (*std::move(
+                                     block.getByPosition(i).column->convertToFullColumnIfConst()))
+                                    .mutate();
+                } else {
+                    _columns[i] = _data_types[i]->createColumn();
+                }
+            }
+        } else {
+            for (size_t i = 0; i < _columns.size(); ++i) {
+                _columns[i]->insertRangeFrom(
+                        *block.getByPosition(i).column->convertToFullColumnIfConst().get(), 0,
+                        block.rows());
+            }
+        }
+    }
+    void merge(Block& block) {
+        if (_columns.size() == 0 && _data_types.size() == 0) {
+            _data_types = block.getDataTypes();
+            _columns.resize(block.columns());
+            for (size_t i = 0; i < block.columns(); ++i) {
+                if (block.getByPosition(i).column) {
+                    _columns[i] =
+                            (*std::move(
+                                     block.getByPosition(i).column->convertToFullColumnIfConst()))
+                                    .mutate();
+                } else {
+                    _columns[i] = _data_types[i]->createColumn();
+                }
+            }
+        } else {
+            for (size_t i = 0; i < _columns.size(); ++i) {
+                _columns[i]->insertRangeFrom(
+                        *block.getByPosition(i).column->convertToFullColumnIfConst().get(), 0,
+                        block.rows());
+            }
+        }
+    }
+
+    Block to_block();
+
+    void add_row(const Block* block, int row);
+    std::string dumpData(size_t row_limit = 100) const;
+
+    void clear() {
+        _columns.clear();
+        _data_types.clear();
+    }
+
+    // TODO: use add_rows instead of this
+    // add_rows(Block* block,PODArray<Int32>& group, int group_num);
+};
 
 } // namespace doris::vectorized

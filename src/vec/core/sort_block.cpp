@@ -110,12 +110,12 @@ void sortBlock(Block & block, const SortDescription & description, UInt64 limit)
             : block.safeGetByPosition(description[0].column_number).column.get();
 
         IColumn::Permutation perm;
-        if (needCollation(column, description[0]))
-        {
-            const ColumnString & column_string = typeid_cast<const ColumnString &>(*column);
-            column_string.getPermutationWithCollation(*description[0].collator, reverse, limit, perm);
-        }
-        else
+//        if (needCollation(column, description[0]))
+//        {
+//            const ColumnString & column_string = typeid_cast<const ColumnString &>(*column);
+//            column_string.getPermutationWithCollation(*description[0].collator, reverse, limit, perm);
+//        }
+//        else
             column->getPermutation(reverse, limit, description[0].nulls_direction, perm);
 
         size_t columns = block.columns();
@@ -132,28 +132,28 @@ void sortBlock(Block & block, const SortDescription & description, UInt64 limit)
         if (limit >= size)
             limit = 0;
 
-        bool need_collation = false;
+        // bool need_collation = false;
         ColumnsWithSortDescriptions columns_with_sort_desc = getColumnsWithSortDescription(block, description);
 
-        for (size_t i = 0, num_sort_columns = description.size(); i < num_sort_columns; ++i)
-        {
-            if (needCollation(columns_with_sort_desc[i].first, description[i]))
-            {
-                need_collation = true;
-                break;
-            }
-        }
+//        for (size_t i = 0, num_sort_columns = description.size(); i < num_sort_columns; ++i)
+//        {
+//            if (needCollation(columns_with_sort_desc[i].first, description[i]))
+//            {
+//                need_collation = true;
+//                break;
+//            }
+//        }
 
-        if (need_collation)
-        {
-            PartialSortingLessWithCollation less_with_collation(columns_with_sort_desc);
-
-            if (limit)
-                std::partial_sort(perm.begin(), perm.begin() + limit, perm.end(), less_with_collation);
-            else
-                pdqsort(perm.begin(), perm.end(), less_with_collation);
-        }
-        else
+//        if (need_collation)
+//        {
+//            PartialSortingLessWithCollation less_with_collation(columns_with_sort_desc);
+//
+//            if (limit)
+//                std::partial_sort(perm.begin(), perm.begin() + limit, perm.end(), less_with_collation);
+//            else
+//                pdqsort(perm.begin(), perm.end(), less_with_collation);
+//        }
+//        else
         {
             PartialSortingLess less(columns_with_sort_desc);
 

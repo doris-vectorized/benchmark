@@ -1,10 +1,9 @@
 #pragma once
 
-#include <vec/core/types.h>
 #include <vec/common/uint128.h>
+#include <vec/core/types.h>
 
 #include <type_traits>
-
 
 /** Hash functions that are better than the trivial function std::hash.
   *
@@ -20,8 +19,7 @@
 /** Taken from MurmurHash. This is Murmur finalizer.
   * Faster than intHash32 when inserting into the hash table UInt64 -> UInt64, where the key is the visitor ID.
   */
-inline doris::vectorized::UInt64 intHash64(doris::vectorized::UInt64 x)
-{
+inline doris::vectorized::UInt64 intHash64(doris::vectorized::UInt64 x) {
     x ^= x >> 33;
     x *= 0xff51afd7ed558ccdULL;
     x ^= x >> 33;
@@ -46,8 +44,7 @@ inline doris::vectorized::UInt64 intHash64(doris::vectorized::UInt64 x)
 #include <arm_neon.h>
 #endif
 
-inline doris::vectorized::UInt64 intHashCRC32(doris::vectorized::UInt64 x)
-{
+inline doris::vectorized::UInt64 intHashCRC32(doris::vectorized::UInt64 x) {
 #ifdef __SSE4_2__
     return _mm_crc32_u64(-1ULL, x);
 #elif defined(__aarch64__) && defined(__ARM_FEATURE_CRC32)
@@ -58,12 +55,9 @@ inline doris::vectorized::UInt64 intHashCRC32(doris::vectorized::UInt64 x)
 #endif
 }
 
-
 template <typename T>
-inline size_t DefaultHash64(T key)
-{
-    union
-    {
+inline size_t DefaultHash64(T key) {
+    union {
         T in;
         doris::vectorized::UInt64 out;
     } u;
@@ -76,22 +70,16 @@ template <typename T, typename Enable = void>
 struct DefaultHash;
 
 template <typename T>
-struct DefaultHash<T, std::enable_if_t<std::is_arithmetic_v<T>>>
-{
-    size_t operator() (T key) const
-    {
-        return DefaultHash64<T>(key);
-    }
+struct DefaultHash<T, std::enable_if_t<std::is_arithmetic_v<T>>> {
+    size_t operator()(T key) const { return DefaultHash64<T>(key); }
 };
 
-
-template <typename T> struct HashCRC32;
+template <typename T>
+struct HashCRC32;
 
 template <typename T>
-inline size_t hashCRC32(T key)
-{
-    union
-    {
+inline size_t hashCRC32(T key) {
+    union {
         T in;
         doris::vectorized::UInt64 out;
     } u;
@@ -100,14 +88,11 @@ inline size_t hashCRC32(T key)
     return intHashCRC32(u.out);
 }
 
-#define DEFINE_HASH(T) \
-template <> struct HashCRC32<T>\
-{\
-    size_t operator() (T key) const\
-    {\
-        return hashCRC32<T>(key);\
-    }\
-};
+#define DEFINE_HASH(T)                                               \
+    template <>                                                      \
+    struct HashCRC32<T> {                                            \
+        size_t operator()(T key) const { return hashCRC32<T>(key); } \
+    };
 
 DEFINE_HASH(doris::vectorized::UInt8)
 DEFINE_HASH(doris::vectorized::UInt16)
@@ -123,17 +108,13 @@ DEFINE_HASH(doris::vectorized::Float64)
 
 #undef DEFINE_HASH
 
-
 /// It is reasonable to use for UInt8, UInt16 with sufficient hash table size.
-struct TrivialHash
-{
+struct TrivialHash {
     template <typename T>
-    size_t operator() (T key) const
-    {
+    size_t operator()(T key) const {
         return key;
     }
 };
-
 
 /** A relatively good non-cryptographic hash function from UInt64 to UInt32.
   * But worse (both in quality and speed) than just cutting intHash64.
@@ -153,8 +134,7 @@ struct TrivialHash
   * But occasionally, it is faster, when written in a loop and loop is vectorized.
   */
 template <doris::vectorized::UInt64 salt>
-inline doris::vectorized::UInt32 intHash32(doris::vectorized::UInt64 key)
-{
+inline doris::vectorized::UInt32 intHash32(doris::vectorized::UInt64 key) {
     key ^= salt;
 
     key = (~key) + (key << 18);
@@ -167,13 +147,8 @@ inline doris::vectorized::UInt32 intHash32(doris::vectorized::UInt64 key)
     return key;
 }
 
-
 /// For containers.
 template <typename T, doris::vectorized::UInt64 salt = 0>
-struct IntHash32
-{
-    size_t operator() (const T & key) const
-    {
-        return intHash32<salt>(key);
-    }
+struct IntHash32 {
+    size_t operator()(const T& key) const { return intHash32<salt>(key); }
 };

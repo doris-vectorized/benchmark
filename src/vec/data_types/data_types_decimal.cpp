@@ -19,18 +19,11 @@
 
 #include <type_traits>
 
+#include "gen_cpp/data.pb.h"
 #include "vec/common/assert_cast.h"
 #include "vec/common/int_exp.h"
 #include "vec/common/typeid_cast.h"
-//#include <DataTypes/DataTypeFactory.h>
-//#include <Formats/ProtobufReader.h>
-//#include <Formats/ProtobufWriter.h>
-//#include <IO/ReadHelpers.h>
-//#include <IO/WriteHelpers.h>
-//#include <IO/readDecimalText.h>
-//#include <Parsers/IAST.h>
-//#include <Parsers/ASTLiteral.h>
-//#include <Interpreters/Context.h>
+#include "vec/io/io_helper.h"
 
 namespace doris::vectorized {
 
@@ -57,6 +50,15 @@ bool DataTypeDecimal<T>::equals(const IDataType& rhs) const {
     if (auto* ptype = typeid_cast<const DataTypeDecimal<T>*>(&rhs))
         return scale == ptype->getScale();
     return false;
+}
+
+template <typename T>
+std::string DataTypeDecimal<T>::to_string(const IColumn& column, size_t row_num) const {
+    T value = assert_cast<const ColumnType&>(*column.convertToFullColumnIfConst().get())
+                      .getData()[row_num];
+    std::ostringstream buf;
+    writeText(value, scale, buf);
+    return buf.str();
 }
 
 //template <typename T>
@@ -192,6 +194,33 @@ bool DataTypeDecimal<T>::equals(const IDataType& rhs) const {
 //    else
 //        container.back() = decimal;
 //}
+
+template <typename T>
+void DataTypeDecimal<T>::serialize(const IColumn& column, PColumn* pcolumn) const {
+    std::ostringstream buf;
+    for (size_t i = 0; i < column.size(); ++i) {
+        const FieldType& x =
+                assert_cast<const ColumnType&>(*column.convertToFullColumnIfConst().get())
+                        .getElement(i);
+        writeBinary(x, buf);
+    }
+
+    write_binary(buf, pcolumn);
+    pcolumn->mutable_decimal_param()->set_precision(precision);
+    pcolumn->mutable_decimal_param()->set_scale(scale);
+}
+
+template <typename T>
+void DataTypeDecimal<T>::deserialize(const PColumn& pcolumn, IColumn* column) const {
+    std::string uncompressed;
+    read_binary(pcolumn, &uncompressed);
+    std::istringstream istr(uncompressed);
+    while (istr.peek() != EOF) {
+        typename FieldType::NativeType x;
+        readBinary(x, istr);
+        assert_cast<ColumnType*>(column)->getData().push_back(FieldType(x));
+    }
+}
 
 template <typename T>
 Field DataTypeDecimal<T>::getDefault() const {

@@ -19,16 +19,13 @@
 
 #include <type_traits>
 
+#include "gen_cpp/data.pb.h"
 #include "vec/columns/column_const.h"
 #include "vec/columns/column_vector.h"
-// #include <IO/ReadHelpers.h>
-// #include <IO/WriteHelpers.h>
 #include "vec/common/assert_cast.h"
 #include "vec/common/nan_utils.h"
 #include "vec/common/typeid_cast.h"
-// #include <Formats/FormatSettings.h>
-// #include <Formats/ProtobufReader.h>
-// #include <Formats/ProtobufWriter.h>
+#include "vec/io/io_helper.h"
 
 namespace doris::vectorized {
 
@@ -40,6 +37,18 @@ void DataTypeNumberBase<T>::to_string(const IColumn& column, size_t row_num,
     } else if constexpr (std::is_integral<T>::value || std::numeric_limits<T>::is_iec559) {
         ostr.write_number(assert_cast<const ColumnVector<T>&>(column).getData()[row_num]);
     }
+}
+
+template <typename T>
+std::string DataTypeNumberBase<T>::to_string(const IColumn& column, size_t row_num) const {
+    if constexpr (std::is_same<T, __int128_t>::value || std::is_same<T, UInt128>::value) {
+        // write int 128
+    } else if constexpr (std::is_integral<T>::value || std::numeric_limits<T>::is_iec559) {
+        return std::to_string(
+                assert_cast<const ColumnVector<T>&>(*column.convertToFullColumnIfConst().get())
+                        .getData()[row_num]);
+    }
+    throw Exception("to_string not support", -1);
 }
 
 // template <typename T>
@@ -255,6 +264,29 @@ Field DataTypeNumberBase<T>::getDefault() const {
 //         container.back() = value;
 // }
 
+template <typename T>
+void DataTypeNumberBase<T>::serialize(const IColumn& column, PColumn* pcolumn) const {
+    std::ostringstream buf;
+    for (size_t i = 0; i < column.size(); ++i) {
+        const FieldType& x =
+                assert_cast<const ColumnVector<T>&>(*column.convertToFullColumnIfConst().get())
+                        .getData()[i];
+        writeBinary(x, buf);
+    }
+    write_binary(buf, pcolumn);
+}
+
+template <typename T>
+void DataTypeNumberBase<T>::deserialize(const PColumn& pcolumn, IColumn* column) const {
+    std::string uncompressed;
+    read_binary(pcolumn, &uncompressed);
+    std::istringstream istr(uncompressed);
+    while (istr.peek() != EOF) {
+        typename ColumnVector<T>::value_type x;
+        readBinary(x, istr);
+        assert_cast<ColumnVector<T>*>(column)->getData().push_back(x);
+    }
+}
 template <typename T>
 MutableColumnPtr DataTypeNumberBase<T>::createColumn() const {
     return ColumnVector<T>::create();

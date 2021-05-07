@@ -23,9 +23,11 @@
 #include "vec/common/cow.h"
 #include "vec/common/string_buffer.hpp"
 #include "vec/core/types.h"
-// #include <vec/DataTypes/DataTypeCustom.h>
 
-namespace doris::vectorized {
+namespace doris {
+class PBlock;
+class PColumn;
+namespace vectorized {
 
 // class ReadBuffer;
 // class WriteBuffer;
@@ -73,6 +75,7 @@ public:
     virtual TypeIndex getTypeId() const = 0;
 
     virtual void to_string(const IColumn& column, size_t row_num, BufferWritable& ostr) const;
+    virtual std::string to_string(const IColumn& column, size_t row_num) const;
 
     /** Binary serialization for range of values in column - for writing to disk/network, etc.
       *
@@ -456,6 +459,9 @@ public:
     /// Updates avg_value_size_hint for newly read column. Uses to optimize deserialization. Zero expected for first column.
     static void updateAvgValueSizeHint(const IColumn& column, double& avg_value_size_hint);
 
+    virtual void serialize(const IColumn& column, PColumn* pcolumn) const = 0;
+    virtual void deserialize(const PColumn& pcolumn, IColumn* column) const = 0;
+
     // static String getFileNameForStream(const String & column_name, const SubstreamPath & path);
 
 private:
@@ -623,4 +629,5 @@ inline bool isCompilableType(const DataTypePtr& data_type) {
     return data_type->isValueRepresentedByNumber() && !isDecimal(data_type);
 }
 
-} // namespace doris::vectorized
+} // namespace vectorized
+} // namespace doris

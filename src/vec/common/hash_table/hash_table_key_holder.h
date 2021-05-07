@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vec/common/arena.h>
+
 #include "vec/common/string_ref.h"
 
 /**
@@ -49,83 +50,71 @@
   * After the call to keyHolderPersistKey(), must return the persistent key.
   */
 template <typename Key>
-inline Key & ALWAYS_INLINE keyHolderGetKey(Key && key) { return key; }
+inline Key& ALWAYS_INLINE keyHolderGetKey(Key&& key) {
+    return key;
+}
 
 /**
   * Make the key persistent. keyHolderGetKey() must return the persistent key
   * after this call.
   */
 template <typename Key>
-inline void ALWAYS_INLINE keyHolderPersistKey(Key &&) {}
+inline void ALWAYS_INLINE keyHolderPersistKey(Key&&) {}
 
 /**
   * Discard the key. Calling keyHolderGetKey() is ill-defined after this.
   */
 template <typename Key>
-inline void ALWAYS_INLINE keyHolderDiscardKey(Key &&) {}
+inline void ALWAYS_INLINE keyHolderDiscardKey(Key&&) {}
 
-namespace doris::vectorized
-{
+namespace doris::vectorized {
 
 /**
   * ArenaKeyHolder is a key holder for hash tables that serializes a StringRef
   * key to an Arena.
   */
-struct ArenaKeyHolder
-{
+struct ArenaKeyHolder {
     StringRef key;
-    Arena & pool;
-
+    Arena& pool;
 };
 
-}
+} // namespace doris::vectorized
 
-inline StringRef & ALWAYS_INLINE keyHolderGetKey(doris::vectorized::ArenaKeyHolder & holder)
-{
+inline StringRef& ALWAYS_INLINE keyHolderGetKey(doris::vectorized::ArenaKeyHolder& holder) {
     return holder.key;
 }
 
-inline void ALWAYS_INLINE keyHolderPersistKey(doris::vectorized::ArenaKeyHolder & holder)
-{
+inline void ALWAYS_INLINE keyHolderPersistKey(doris::vectorized::ArenaKeyHolder& holder) {
     // Hash table shouldn't ask us to persist a zero key
     assert(holder.key.size > 0);
     holder.key.data = holder.pool.insert(holder.key.data, holder.key.size);
 }
 
-inline void ALWAYS_INLINE keyHolderDiscardKey(doris::vectorized::ArenaKeyHolder &)
-{
-}
+inline void ALWAYS_INLINE keyHolderDiscardKey(doris::vectorized::ArenaKeyHolder&) {}
 
-namespace doris::vectorized
-{
+namespace doris::vectorized {
 
 /**
   * SerializedKeyHolder is a key holder for a StringRef key that is already
   * serialized to an Arena. The key must be the last allocation in this Arena,
   * and is discarded by rolling back the allocation.
   */
-struct SerializedKeyHolder
-{
+struct SerializedKeyHolder {
     StringRef key;
-    Arena & pool;
+    Arena& pool;
 };
 
-}
+} // namespace doris::vectorized
 
-inline StringRef & ALWAYS_INLINE keyHolderGetKey(doris::vectorized::SerializedKeyHolder & holder)
-{
+inline StringRef& ALWAYS_INLINE keyHolderGetKey(doris::vectorized::SerializedKeyHolder& holder) {
     return holder.key;
 }
 
-inline void ALWAYS_INLINE keyHolderPersistKey(doris::vectorized::SerializedKeyHolder &)
-{
-}
+inline void ALWAYS_INLINE keyHolderPersistKey(doris::vectorized::SerializedKeyHolder&) {}
 
-inline void ALWAYS_INLINE keyHolderDiscardKey(doris::vectorized::SerializedKeyHolder & holder)
-{
-    [[maybe_unused]] void * new_head = holder.pool.rollback(holder.key.size);
+inline void ALWAYS_INLINE keyHolderDiscardKey(doris::vectorized::SerializedKeyHolder& holder) {
+    [[maybe_unused]] void* new_head = holder.pool.rollback(holder.key.size);
     assert(new_head == holder.key.data);
     holder.key.data = nullptr;
     holder.key.size = 0;
 }
-

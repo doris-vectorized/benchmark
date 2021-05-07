@@ -8,4 +8,4 @@ make
 cd $BASE
 mkdir build;
 cd build;
-cmake .. -DCMAKE_BUILD_TYPE=Debug $LIBRT && make -j$PARALLEL 
+cmake .. -DCMAKE_BUILD_TYPE=Debug $LIBRT -DSNAPPY_BUILD_BENCHMARKS=OFF -DSNAPPY_BUILD_TESTS=OFF && make -j$PARALLEL 

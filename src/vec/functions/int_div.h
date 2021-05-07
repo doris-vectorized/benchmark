@@ -1,7 +1,9 @@
 #pragma once
 
 #include "type_traits"
-#include "vec/common/likely.h"
+
+#include "common/compiler_util.h"
+//#include "vec/common/likely.h"
 #include "vec/common/exception.h"
 //#include "vec/common/config.h"
 #include "vec/data_types/number_traits.h"
@@ -23,21 +25,21 @@ inline void throwIfDivisionLeadsToFPE(A a, B b)
 {
     /// Is it better to use siglongjmp instead of checks?
 
-    if (unlikely(b == 0))
+    if (UNLIKELY(b == 0))
         throw Exception("Division by zero", ErrorCodes::ILLEGAL_DIVISION);
 
     /// http://avva.livejournal.com/2548306.html
-    if (unlikely(std::is_signed_v<A> && std::is_signed_v<B> && a == std::numeric_limits<A>::min() && b == -1))
+    if (UNLIKELY(std::is_signed_v<A> && std::is_signed_v<B> && a == std::numeric_limits<A>::min() && b == -1))
         throw Exception("Division of minimal signed number by minus one", ErrorCodes::ILLEGAL_DIVISION);
 }
 
 template <typename A, typename B>
 inline bool divisionLeadsToFPE(A a, B b)
 {
-    if (unlikely(b == 0))
+    if (UNLIKELY(b == 0))
         return true;
 
-    if (unlikely(std::is_signed_v<A> && std::is_signed_v<B> && a == std::numeric_limits<A>::min() && b == -1))
+    if (UNLIKELY(std::is_signed_v<A> && std::is_signed_v<B> && a == std::numeric_limits<A>::min() && b == -1))
         return true;
 
     return false;

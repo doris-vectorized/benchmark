@@ -18,7 +18,6 @@
 #pragma once
 
 #include <common/compiler_util.h>
-#include <vec/core/defines.h>
 #include <string.h>
 
 #include <algorithm>

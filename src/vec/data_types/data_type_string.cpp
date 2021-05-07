@@ -15,6 +15,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
+#include "vec/data_types/data_type_string.h"
+
+#include "gen_cpp/data.pb.h"
 #include "vec/columns/column_const.h"
 #include "vec/columns/column_string.h"
 #include "vec/columns/columns_number.h"
@@ -22,16 +25,7 @@
 #include "vec/common/typeid_cast.h"
 #include "vec/core/defines.h"
 #include "vec/core/field.h"
-
-//#include <Formats/FormatSettings.h>
-//#include <Formats/ProtobufReader.h>
-//#include <Formats/ProtobufWriter.h>
-#include "vec/data_types/data_type_string.h"
-//#include <vec/DataTypes/DataTypeFactory.h>
-//
-//#include <IO/ReadHelpers.h>
-//#include <IO/WriteHelpers.h>
-//#include <IO/VarInt.h>
+#include "vec/io/io_helper.h"
 
 #ifdef __SSE2__
 #include <emmintrin.h>
@@ -250,6 +244,43 @@ static inline void read(IColumn& column, Reader&& reader) {
         offsets.resize_assume_reserved(old_offsets_size);
         data.resize_assume_reserved(old_chars_size);
         throw;
+    }
+}
+
+std::string DataTypeString::to_string(const IColumn& column, size_t row_num) const {
+    const StringRef& s =
+            assert_cast<const ColumnString&>(*column.convertToFullColumnIfConst().get())
+                    .getDataAt(row_num);
+    return s.toString();
+}
+
+void DataTypeString::serialize(const IColumn& column, PColumn* pcolumn) const {
+    std::ostringstream buf;
+    for (size_t i = 0; i < column.size(); ++i) {
+        const auto& s = assert_cast<const ColumnString&>(*column.convertToFullColumnIfConst().get())
+                                .getDataAt(i);
+        writeStringBinary(s, buf);
+    }
+    write_binary(buf, pcolumn);
+}
+
+void DataTypeString::deserialize(const PColumn& pcolumn, IColumn* column) const {
+    ColumnString* column_string = assert_cast<ColumnString*>(column);
+    ColumnString::Chars& data = column_string->getChars();
+    ColumnString::Offsets& offsets = column_string->getOffsets();
+    size_t offset = 0;
+    std::string uncompressed;
+    read_binary(pcolumn, &uncompressed);
+    std::istringstream istr(uncompressed);
+    while (istr.peek() != EOF) {
+        std::string s;
+        readBinary(s, istr);
+        size_t size = s.size();
+        offset = offset + size + 1;
+        offsets.push_back(offset);
+        data.resize(offset);
+        s.copy(reinterpret_cast<char*>(&data[offset - size - 1]), size);
+        data.back() = 0;
     }
 }
 

@@ -42,13 +42,13 @@ struct ModuloByConstantImpl
 
     static void vector_constant(const PaddedPODArray<A> & a, B b, PaddedPODArray<ResultType> & c)
     {
-        if (unlikely(b == 0))
+        if (UNLIKELY(b == 0))
             throw Exception("Division by zero", ErrorCodes::ILLEGAL_DIVISION);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wsign-compare"
 
-        if (unlikely((std::is_signed_v<B> && b == -1) || b == 1))
+        if (UNLIKELY((std::is_signed_v<B> && b == -1) || b == 1))
         {
             size_t size = a.size();
             for (size_t i = 0; i < size; ++i)

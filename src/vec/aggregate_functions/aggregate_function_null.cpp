@@ -102,6 +102,9 @@ void registerAggregateFunctionCombinatorNull(AggregateFunctionSimpleFactory& fac
         return function_combinator->transformAggregateFunction(nested_function, types, params);
     };
     factory.registerFunction("sum", creator, true);
+    factory.registerFunction("max", creator, true);
+    factory.registerFunction("min", creator, true);
+    factory.registerFunction("avg", creator, true);
 }
 
 } // namespace doris::vectorized

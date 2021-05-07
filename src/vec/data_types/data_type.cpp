@@ -15,17 +15,12 @@
 // specific language governing permissions and limitations
 // under the License.
 
+#include "vec/data_types/data_type.h"
+
 #include "vec/columns/column.h"
 #include "vec/columns/column_const.h"
 #include "vec/common/exception.h"
-// #include <vec/Common/escapeForFileName.h>
-
 #include "vec/core/defines.h"
-
-// #include <IO/WriteHelpers.h>
-
-#include "vec/data_types/data_type.h"
-// #include <vec/DataTypes/DataTypeCustom.h>
 #include "vec/data_types/nested_utils.h"
 
 namespace doris::vectorized {
@@ -128,6 +123,11 @@ size_t IDataType::getSizeOfValueInMemory() const {
 // }
 
 void IDataType::to_string(const IColumn& column, size_t row_num, BufferWritable& ostr) const {
+    throw Exception("Data type " + getName() + "to_string not implement.",
+                    ErrorCodes::NOT_IMPLEMENTED);
+}
+
+std::string IDataType::to_string(const IColumn& column, size_t row_num) const {
     throw Exception("Data type " + getName() + "to_string not implement.",
                     ErrorCodes::NOT_IMPLEMENTED);
 }

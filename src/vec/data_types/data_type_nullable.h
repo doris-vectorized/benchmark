@@ -92,6 +92,8 @@ public:
     //     void serializeProtobuf(const IColumn & column, size_t row_num, ProtobufWriter & protobuf, size_t & value_index) const override;
     //     void deserializeProtobuf(IColumn & column, ProtobufReader & protobuf, bool allow_add_row, bool & row_added) const override;
 
+    void serialize(const IColumn& column, PColumn* pcolumn) const override;
+    void deserialize(const PColumn& pcolumn, IColumn* column) const override;
     MutableColumnPtr createColumn() const override;
 
     Field getDefault() const override;
@@ -130,6 +132,7 @@ public:
     bool canBeInsideLowCardinality() const override {
         return nested_data_type->canBeInsideLowCardinality();
     }
+    std::string to_string(const IColumn& column, size_t row_num) const;
 
     const DataTypePtr& getNestedType() const { return nested_data_type; }
 

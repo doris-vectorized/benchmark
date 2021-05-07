@@ -17,19 +17,25 @@
 
 #include "vec/core/block.h"
 
-#include "vec/common/exception.h"
-#include "vec/common/field_visitors.h"
-
-// #include <IO/WriteBufferFromString.h>
-// #include <IO/Operators.h>
-
+#include <iomanip>
 #include <iterator>
 #include <memory>
 
-#include "vec/columns/column_vector.h"
+#include "fmt/format.h"
+#include "gen_cpp/data.pb.h"
 #include "vec/columns/column_const.h"
+#include "vec/columns/column_nullable.h"
+#include "vec/columns/column_vector.h"
+#include "vec/columns/columns_common.h"
+#include "vec/columns/columns_number.h"
 #include "vec/common/assert_cast.h"
+#include "vec/common/exception.h"
+#include "vec/common/field_visitors.h"
 #include "vec/common/typeid_cast.h"
+#include "vec/data_types/data_type_nullable.h"
+#include "vec/data_types/data_type_string.h"
+#include "vec/data_types/data_types_decimal.h"
+#include "vec/data_types/data_types_number.h"
 
 namespace doris::vectorized {
 
@@ -38,13 +44,132 @@ extern const int POSITION_OUT_OF_BOUND;
 extern const int NOT_FOUND_COLUMN_IN_BLOCK;
 extern const int SIZES_OF_COLUMNS_DOESNT_MATCH;
 extern const int BLOCKS_HAVE_DIFFERENT_STRUCTURE;
+extern const int UNKNOWN_TYPE;
 } // namespace ErrorCodes
 
-Block::Block(std::initializer_list<ColumnWithTypeAndName> il) : data {il} {
+inline DataTypePtr get_data_type(const PColumn& pcolumn) {
+    switch (pcolumn.type()) {
+    case PColumn::UINT8: {
+        return std::make_shared<DataTypeUInt8>();
+    }
+    case PColumn::UINT16: {
+        return std::make_shared<DataTypeUInt16>();
+    }
+    case PColumn::UINT32: {
+        return std::make_shared<DataTypeUInt32>();
+    }
+    case PColumn::UINT64: {
+        return std::make_shared<DataTypeUInt64>();
+    }
+    case PColumn::UINT128: {
+        return std::make_shared<DataTypeUInt128>();
+    }
+    case PColumn::INT8: {
+        return std::make_shared<DataTypeInt8>();
+    }
+    case PColumn::INT16: {
+        return std::make_shared<DataTypeInt16>();
+    }
+    case PColumn::INT32: {
+        return std::make_shared<DataTypeInt32>();
+    }
+    case PColumn::INT64: {
+        return std::make_shared<DataTypeInt64>();
+    }
+    case PColumn::INT128: {
+        return std::make_shared<DataTypeInt128>();
+    }
+    case PColumn::FLOAT32: {
+        return std::make_shared<DataTypeFloat32>();
+    }
+    case PColumn::FLOAT64: {
+        return std::make_shared<DataTypeFloat64>();
+    }
+    case PColumn::STRING: {
+        return std::make_shared<DataTypeString>();
+    }
+    case PColumn::DECIMAL32: {
+        return std::make_shared<DataTypeDecimal<Decimal32>>(pcolumn.decimal_param().precision(),
+                                                            pcolumn.decimal_param().scale());
+    }
+    case PColumn::DECIMAL64: {
+        return std::make_shared<DataTypeDecimal<Decimal64>>(pcolumn.decimal_param().precision(),
+                                                            pcolumn.decimal_param().scale());
+    }
+    case PColumn::DECIMAL128: {
+        return std::make_shared<DataTypeDecimal<Decimal128>>(pcolumn.decimal_param().precision(),
+                                                             pcolumn.decimal_param().scale());
+    }
+    default: {
+        throw Exception("Unknown data type: " + std::to_string(pcolumn.type()) +
+                                ", data type name: " + PColumn::DataType_Name(pcolumn.type()),
+                        ErrorCodes::UNKNOWN_TYPE);
+        break;
+    }
+    }
+}
+
+PColumn::DataType get_pdata_type(DataTypePtr data_type) {
+    switch (data_type->getTypeId()) {
+    case TypeIndex::UInt8:
+        return PColumn::UINT8;
+    case TypeIndex::UInt16:
+        return PColumn::UINT16;
+    case TypeIndex::UInt32:
+        return PColumn::UINT32;
+    case TypeIndex::UInt64:
+        return PColumn::UINT64;
+    case TypeIndex::UInt128:
+        return PColumn::UINT128;
+    case TypeIndex::Int8:
+        return PColumn::INT8;
+    case TypeIndex::Int16:
+        return PColumn::INT16;
+    case TypeIndex::Int32:
+        return PColumn::INT32;
+    case TypeIndex::Int64:
+        return PColumn::INT64;
+    case TypeIndex::Int128:
+        return PColumn::INT128;
+    case TypeIndex::Float32:
+        return PColumn::FLOAT32;
+    case TypeIndex::Float64:
+        return PColumn::FLOAT64;
+    case TypeIndex::Decimal32:
+        return PColumn::DECIMAL32;
+    case TypeIndex::Decimal64:
+        return PColumn::DECIMAL64;
+    case TypeIndex::Decimal128:
+        return PColumn::DECIMAL128;
+    case TypeIndex::String:
+        return PColumn::STRING;
+    default:
+        return PColumn::UNKNOWN;
+    }
+}
+
+Block::Block(std::initializer_list<ColumnWithTypeAndName> il) : data{il} {
     initializeIndexByName();
 }
 
-Block::Block(const ColumnsWithTypeAndName& data_) : data {data_} {
+Block::Block(const ColumnsWithTypeAndName& data_) : data{data_} {
+    initializeIndexByName();
+}
+
+Block::Block(const PBlock& pblock) {
+    for (const auto& pcolumn : pblock.columns()) {
+        DataTypePtr type = get_data_type(pcolumn);
+        MutableColumnPtr data_column;
+        if (pcolumn.is_null_size() > 0) {
+            data_column =
+                    ColumnNullable::create(std::move(type->createColumn()), ColumnUInt8::create());
+            type = makeNullable(type);
+        } else {
+            data_column = type->createColumn();
+        }
+        type->deserialize(pcolumn, data_column.get());
+        data.emplace_back(data_column->getPtr(), type, pcolumn.name());
+    }
     initializeIndexByName();
 }
 
@@ -224,6 +349,16 @@ size_t Block::rows() const {
     return 0;
 }
 
+void Block::set_num_rows(size_t length) {
+    if (rows() > length) {
+        for (auto& elem : data) {
+            if (elem.column) {
+                elem.column = elem.column->cut(0, length);
+            }
+        }
+    }
+}
+
 size_t Block::bytes() const {
     size_t res = 0;
     for (const auto& elem : data) res += elem.column->byteSize();
@@ -248,12 +383,51 @@ std::string Block::dumpNames() const {
     return out.str();
 }
 
-std::string Block::dumpData() const {
-    // WriteBufferFromOwnString out;
-    std::stringstream out;
+std::string Block::dumpData(size_t row_limit) const {
+    if (rows() == 0) {
+        return "empty block.";
+    }
+    std::vector<std::string> headers;
+    std::vector<size_t> headers_size;
     for (auto it = data.begin(); it != data.end(); ++it) {
-        if (it != data.begin()) out << ", ";
-        out << it->name;
+        std::string s = fmt::format("{}({})", it->name, it->type->getName());
+        headers_size.push_back(s.size() > 15 ? s.size() : 15);
+        headers.emplace_back(s);
+    }
+
+    std::stringstream out;
+    // header upper line
+    auto line = [&]() {
+        for (size_t i = 0; i < columns(); ++i) {
+            out << std::setfill('-') << std::setw(1) << "+" << std::setw(headers_size[i]) << "-";
+        }
+        out << std::setw(1) << "+" << std::endl;
+    };
+    line();
+    // header text
+    for (size_t i = 0; i < columns(); ++i) {
+        out << std::setfill(' ') << std::setw(1) << "|" << std::left << std::setw(headers_size[i])
+            << headers[i];
+    }
+    out << std::setw(1) << "|" << std::endl;
+    // header bottom line
+    line();
+    // content
+    for (size_t row_num = 0; row_num < rows() && row_num < row_limit; ++row_num) {
+        for (size_t i = 0; i < columns(); ++i) {
+            std::string s = data[i].to_string(row_num);
+            if (s.length() > headers_size[i]) {
+                s = s.substr(0, headers_size[i] - 3) + "...";
+            }
+            out << std::setfill(' ') << std::setw(1) << "|" << std::setw(headers_size[i])
+                << std::right << s;
+        }
+        out << std::setw(1) << "|" << std::endl;
+    }
+    // bottom line
+    line();
+    if (row_limit < rows()) {
+        out << rows() << " rows in block, only show first " << row_limit << " rows." << std::endl;
     }
     return out.str();
 }
@@ -525,6 +699,12 @@ void Block::swap(Block& other) noexcept {
     index_by_name.swap(other.index_by_name);
 }
 
+void Block::swap(Block&& other) noexcept {
+    clear();
+    data = std::move(other.data);
+    initializeIndexByName();
+}
+
 void Block::updateHash(SipHash& hash) const {
     for (size_t row_no = 0, num_rows = rows(); row_no < num_rows; ++row_no)
         for (const auto& col : data) col.column->updateHashWithValue(row_no, hash);
@@ -535,15 +715,103 @@ void Block::filter_block(Block* block, int filter_column_id, int column_to_keep)
     const IColumn::Filter& filter =
             assert_cast<const doris::vectorized::ColumnVector<UInt8>&>(*filter_column).getData();
 
-    block->getByPosition(0).column = block->getByPosition(0).column->filter(filter, 0);
-    if (block->getByPosition(0).column->empty()) return;
-
-    for (int i = 1; i < column_to_keep; ++i) {
-        block->getByPosition(i).column = block->getByPosition(i).column->filter(filter, 0);
+    auto count = countBytesInFilter(filter);
+    if (count == 0) {
+        block->getByPosition(0).column = block->getByPosition(0).column->cloneEmpty();
+    } else {
+        if (count != block->rows()) {
+            for (int i = 0; i < column_to_keep; ++i) {
+                block->getByPosition(i).column = block->getByPosition(i).column->filter(filter, 0);
+            }
+        }
+        for (size_t i = column_to_keep; i < block->columns(); ++i) {
+            block->erase(i);
+        }
     }
-    for (size_t i = column_to_keep; i < block->columns(); ++i) {
-        block->erase(i);
+}
+void Block::serialize(PBlock* pblock) const {
+    for (auto c = cbegin(); c != cend(); ++c) {
+        PColumn* pc = pblock->add_columns();
+        pc->set_name(c->name);
+        if (c->type->isNullable()) {
+            pc->set_type(get_pdata_type(
+                    std::dynamic_pointer_cast<const DataTypeNullable>(c->type)->getNestedType()));
+        } else {
+            pc->set_type(get_pdata_type(c->type));
+        }
+        c->type->serialize(*(c->column), pc);
     }
 }
 
+size_t MutableBlock::rows() const {
+    for (const auto& column : _columns)
+        if (column) {
+            return column->size();
+        }
+
+    return 0;
+}
+
+void MutableBlock::add_row(const Block* block, int row) {
+    auto& src_columns_with_schema = block->getColumnsWithTypeAndName();
+    for (size_t i = 0; i < _columns.size(); ++i) {
+        _columns[i]->insertFrom(*src_columns_with_schema[i].column.get(), row);
+    }
+}
+
+Block MutableBlock::to_block() {
+    ColumnsWithTypeAndName columns_with_schema;
+    for (size_t i = 0; i < _columns.size(); ++i) {
+        columns_with_schema.emplace_back(std::move(_columns[i]), _data_types[i], "");
+    }
+    return {columns_with_schema};
+}
+std::string MutableBlock::dumpData(size_t row_limit) const {
+    if (rows() == 0) {
+        return "empty block.";
+    }
+    std::vector<std::string> headers;
+    std::vector<size_t> headers_size;
+    for (size_t i = 0; i < columns(); ++i) {
+        std::string s = _data_types[i]->getName();
+        headers_size.push_back(s.size() > 15 ? s.size() : 15);
+        headers.emplace_back(s);
+    }
+
+    std::stringstream out;
+    // header upper line
+    auto line = [&]() {
+        for (size_t i = 0; i < columns(); ++i) {
+            out << std::setfill('-') << std::setw(1) << "+" << std::setw(headers_size[i]) << "-";
+        }
+        out << std::setw(1) << "+" << std::endl;
+    };
+    line();
+    // header text
+    for (size_t i = 0; i < columns(); ++i) {
+        out << std::setfill(' ') << std::setw(1) << "|" << std::left << std::setw(headers_size[i])
+            << headers[i];
+    }
+    out << std::setw(1) << "|" << std::endl;
+    // header bottom line
+    line();
+    // content
+    for (size_t row_num = 0; row_num < rows() && row_num < row_limit; ++row_num) {
+        for (size_t i = 0; i < columns(); ++i) {
+            std::string s = _data_types[i]->to_string(*_columns[i].get(), row_num);
+            if (s.length() > headers_size[i]) {
+                s = s.substr(0, headers_size[i] - 3) + "...";
+            }
+            out << std::setfill(' ') << std::setw(1) << "|" << std::setw(headers_size[i])
+                << std::right << s;
+        }
+        out << std::setw(1) << "|" << std::endl;
+    }
+    // bottom line
+    line();
+    if (row_limit < rows()) {
+        out << rows() << " rows in block, only show first " << row_limit << " rows." << std::endl;
+    }
+    return out.str();
+}
 } // namespace doris::vectorized

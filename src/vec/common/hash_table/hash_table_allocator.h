@@ -2,7 +2,6 @@
 
 #include <vec/common/allocator.h>
 
-
 /**
   * We are going to use the entire memory we allocated when resizing a hash
   * table, so it makes sense to pre-fault the pages so that page faults don't

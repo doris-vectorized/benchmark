@@ -24,16 +24,22 @@ endif()
 add_subdirectory("thirdparty/googletest")
 add_subdirectory("thirdparty/benchmark")
 add_subdirectory("thirdparty/fmt")
+add_subdirectory("thirdparty/snappy")
 
 include_directories("thirdparty/install/include")
+include_directories("thirdparty/")
 include_directories("src/")
 #FILE(GLOB COMMON_SOURCE "src/Common/*.cpp")
 
 link_directories("thirdparty/install/lib/")
 link_directories("thirdparty/install/lib64/")
-link_libraries(fmt pthread dl)
+set(SNAPPY_LIBRARY snappy)
+link_libraries(snappy protobuf fmt pthread dl)
 
 file(GLOB_RECURSE VEC_SOURCE ./src/vec/*.cpp)
+file(GLOB_RECURSE DEP_SOURCE ./src/gen_cpp/*.cc)
+
+list(APPEND VEC_SOURCE ${DEP_SOURCE})
 
 #file(GLOB EXCUDE "./src/vec/Functions/intDiv.cpp")
 #list(REMOVE_ITEM VEC_SOURCE ${EXCUDE})
@@ -42,7 +48,7 @@ add_executable(cow_test test/cow_test.cpp)
 target_link_libraries(cow_test gtest pthread)
 
 add_executable(array_test test/podarray_test.cpp ${VEC_SOURCE})
-target_link_libraries(array_test gtest pthread dl)
+target_link_libraries(array_test snappy gtest pthread dl)
 
 add_executable(exception_test test/exception_test.cpp ${VEC_SOURCE})
 target_link_libraries(exception_test boost_stacktrace_addr2line boost_stacktrace_basic boost_exception gtest)

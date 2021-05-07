@@ -94,8 +94,15 @@
 #define DBMS_DEFAULT_PATH "/var/lib/clickhouse/"
 
 // more aliases: https://mailman.videolan.org/pipermail/x264-devel/2014-May/010660.html
+#ifdef ALWAYS_INLINE
+#undef ALWAYS_INLINE
+#endif
 
-#ifndef ALWAYS_INLINE
+#if defined(_MSC_VER)
+#define ALWAYS_INLINE __forceinline
+#define NO_INLINE static __declspec(noinline)
+#define MAY_ALIAS
+#else
 #define ALWAYS_INLINE __attribute__((__always_inline__))
 #define NO_INLINE __attribute__((__noinline__))
 #define MAY_ALIAS __attribute__((__may_alias__))

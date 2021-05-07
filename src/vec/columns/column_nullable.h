@@ -94,7 +94,8 @@ public:
     ColumnPtr permute(const Permutation& perm, size_t limit) const override;
     //    ColumnPtr index(const IColumn & indexes, size_t limit) const override;
     int compareAt(size_t n, size_t m, const IColumn& rhs_, int null_direction_hint) const override;
-    void getPermutation(bool reverse, size_t limit, int null_direction_hint, Permutation & res) const override;
+    void getPermutation(bool reverse, size_t limit, int null_direction_hint,
+                        Permutation& res) const override;
     void reserve(size_t n) override;
     size_t byteSize() const override;
     size_t allocatedBytes() const override;
@@ -156,6 +157,39 @@ public:
 
     /// Check that size of null map equals to size of nested column.
     void checkConsistency() const;
+
+    bool has_null() const {
+        size_t size = getNullMapData().size();
+        const UInt8* null_pos = getNullMapData().data();
+        const UInt8* null_pos_end = getNullMapData().data() + size;
+ #ifdef __SSE2__
+    /** A slightly more optimized version.
+        * Based on the assumption that often pieces of consecutive values
+        *  completely pass or do not pass the filter.
+        * Therefore, we will optimistically check the parts of `SIMD_BYTES` values.
+        */
+        static constexpr size_t SIMD_BYTES = 16;
+        const __m128i zero16 = _mm_setzero_si128();
+        const UInt8* null_end_sse = null_pos + size / SIMD_BYTES * SIMD_BYTES;
+
+        while (null_pos < null_end_sse) {
+            int mask = _mm_movemask_epi8(_mm_cmpgt_epi8(
+                _mm_loadu_si128(reinterpret_cast<const __m128i*>(null_pos)), zero16));
+
+            if (0 != mask) {
+                return true;
+            }
+            null_pos += SIMD_BYTES;
+        }
+#endif
+        while (null_pos < null_pos_end) {
+            if (*null_pos != 0) {
+                return true;
+            }
+            null_pos++;
+        }
+        return false;
+    }
 
 private:
     WrappedPtr nested_column;
