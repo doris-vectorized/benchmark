@@ -110,6 +110,23 @@ TEST(HashSetTest, basic_test) {
     auto cell = hash_set.find(4096);
     ASSERT_EQ(cell, nullptr);
 
+    std::stringstream ss;
+    hash_set.write(ss);
+
+    Set hash_set_2;
+    hash_set_2.read(ss);
+    ASSERT_EQ(hash_set_2.size(), 1000);
+
+    auto cell_2 = hash_set_2.find(4096);
+    ASSERT_EQ(cell_2, nullptr);
+
+    for(int i = 0;i < 1000; ++i) {
+        bool res = hash_set_2.has(i);
+        ASSERT_TRUE(res);
+        cell_2 = hash_set_2.find(i);
+        ASSERT_NE(cell_2, nullptr);
+    }
+
 }
 
 } // namespace doris::vectorized
