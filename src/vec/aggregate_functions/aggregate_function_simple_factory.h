@@ -51,6 +51,12 @@ private:
     AggregateFunctions nullable_aggregate_functions;
 
 public:
+    void registerNullableFunctionCombinator(Creator creator) {
+        for (auto entity : aggregate_functions) {
+            nullable_aggregate_functions[entity.first] = creator;
+        }
+    }
+
     void registerFunction(const std::string& name, Creator creator, bool nullable = false) {
         if (nullable) {
             nullable_aggregate_functions[name] = creator;
@@ -68,11 +74,13 @@ public:
             }
         }
         if (nullable) {
-            return nullable_aggregate_functions[name] == nullptr ? nullptr :
-                nullable_aggregate_functions[name](name, argument_types, parameters);
+            return nullable_aggregate_functions[name] == nullptr
+                           ? nullptr
+                           : nullable_aggregate_functions[name](name, argument_types, parameters);
         } else {
-            return aggregate_functions[name] == nullptr ? nullptr : 
-            aggregate_functions[name](name, argument_types, parameters);
+            return aggregate_functions[name] == nullptr
+                           ? nullptr
+                           : aggregate_functions[name](name, argument_types, parameters);
         }
     }
 

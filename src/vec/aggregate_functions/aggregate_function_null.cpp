@@ -93,7 +93,6 @@ public:
 };
 
 void registerAggregateFunctionCombinatorNull(AggregateFunctionSimpleFactory& factory) {
-    // factory.registerCombinator(std::make_shared<AggregateFunctionCombinatorNull>());
     AggregateFunctionCreator creator = [&](const std::string& name, const DataTypes& types,
                                            const Array& params) {
         auto function_combinator = std::make_shared<AggregateFunctionCombinatorNull>();
@@ -101,10 +100,7 @@ void registerAggregateFunctionCombinatorNull(AggregateFunctionSimpleFactory& fac
         auto nested_function = factory.get(name, transformArguments, params);
         return function_combinator->transformAggregateFunction(nested_function, types, params);
     };
-    factory.registerFunction("sum", creator, true);
-    factory.registerFunction("max", creator, true);
-    factory.registerFunction("min", creator, true);
-    factory.registerFunction("avg", creator, true);
+    factory.registerNullableFunctionCombinator(creator);
 }
 
 } // namespace doris::vectorized

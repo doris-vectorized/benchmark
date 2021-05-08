@@ -2,8 +2,10 @@
 #include "gtest/gtest.h"
 #include "vec/common/columns_hashing.h"
 #include "vec/common/hash_table/hash_map.h"
+#include "vec/common/hash_table/hash_set.h"
 
 namespace doris::vectorized {
+
 template <typename TData>
 struct AggregationMethodSerialized {
     using Data = TData;
@@ -84,6 +86,32 @@ TEST(HashTableTest, hash_table_test) {
         ++iter;
     }
 }
+
+TEST(HashSetTest, basic_test) {
+    using Key = int32_t;
+
+    /// When creating, the hash table must be small.
+    using Set = HashSet<
+        Key,
+        HashCRC32<Key>,
+        HashTableGrower<4>,
+        HashTableAllocatorWithStackMemory<sizeof(Key) * (1 << 4)>>;
+    Set hash_set;
+
+    for(int i = 0;i < 1000;++i) {
+        hash_set.insert(i);
+    }
+
+    for(int i = 0;i < 1000; ++i) {
+        auto cell = hash_set.find(i);
+        ASSERT_NE(cell, nullptr);
+    }
+
+    auto cell = hash_set.find(4096);
+    ASSERT_EQ(cell, nullptr);
+
+}
+
 } // namespace doris::vectorized
 
 int main(int argc, char** argv) {
