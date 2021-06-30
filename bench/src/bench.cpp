@@ -26,7 +26,7 @@
 #include "vec/columns/column_vector.h"
 #include "vec/core/block.h"
 #include "vec/data_types/data_type.h"
-#include "vec/data_types/data_types_number.h"
+#include "vec/data_types/data_type_number.h"
 #include "vec/exprs/vexpr.h"
 #include "vec/exprs/vexpr_context.h"
 #include "vec/utils/util.hpp"
@@ -208,9 +208,6 @@ static void BM_AGG_COUNST_SCALAR(benchmark::State& state) {
 }
 
 BENCHMARK(BM_AGG_COUNST_SCALAR);
-namespace doris::vectorized {
-void registerAggregateFunctionSum(vectorized::AggregateFunctionSimpleFactory& factory);
-}
 static void BM_AGG_COUNT_VEC(benchmark::State& state) {
     using namespace doris;
 
@@ -244,9 +241,8 @@ static void BM_AGG_COUNT_VEC(benchmark::State& state) {
         row_batch.commit_last_row();
     }
     auto block = row_batch.convert_to_vec_block();
-    doris::vectorized::Columns columns = block.getColumns();
-    doris::vectorized::AggregateFunctionSimpleFactory factory;
-    registerAggregateFunctionSum(factory);
+    doris::vectorized::Columns columns = block.get_columns();
+    auto &factory = doris::vectorized::AggregateFunctionSimpleFactory::instance();
     doris::vectorized::DataTypePtr data_type(std::make_shared<vectorized::DataTypeInt32>());
     doris::vectorized::DataTypes data_types = {data_type};
     doris::vectorized::Array array;
@@ -265,7 +261,7 @@ static void BM_AGG_COUNT_VEC(benchmark::State& state) {
     func = (vectorized::AggregateFunctionSum<
             int32_t, int64_t, vectorized::AggregateFunctionSumData<int64_t>>*)agg_function.get();
     for (auto _ : state) {
-        agg_function->addBatchSinglePlace(1024 ,place,column,nullptr);
+        agg_function->add_batch_single_place(1024 ,place,column,nullptr);
     }
 
     benchmark::DoNotOptimize(block);
